@@ -70,8 +70,8 @@ CLOCK = pygame.time.Clock()
 WEIGHT = pygame.image.load("assets/images/weight.png")
 START = pygame.image.load("assets/images/triangle.png")
 GOAL = pygame.image.load("assets/images/circle.png")
-FONT_14 = pygame.font.Font("assets/fonts/Montserrat-Regular.ttf", 14)
-FONT_18 = pygame.font.Font("assets/fonts/Montserrat-Regular.ttf", 18)
+FONT_14 = pygame.font.Font("assets/font/Montserrat-Regular.ttf", 14)
+FONT_18 = pygame.font.Font("assets/font/Montserrat-Regular.ttf", 18)
 
 # Thông số animation
 MIN_SIZE = 0.3 * CELL_SIZE

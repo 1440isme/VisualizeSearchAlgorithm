@@ -2,7 +2,7 @@ from ..models.frontier import PriorityQueueFrontier
 from ..models.grid import Grid
 from ..models.solution import NoSolution, Solution
 
-class GBFS:
+class GreedyBestFirstSearch:
     @staticmethod
     def search(grid: Grid) -> Solution:
         """Tìm đường đi giữa hai điểm trong một lưới sử dụng thuật toán A* Search
@@ -19,7 +19,7 @@ class GBFS:
 
         # Khởi tạo hàng đợi ưu tiên PriorityQueueFrontier và thêm nút bắt đầu vào hàng đợi
         frontier = PriorityQueueFrontier()
-        frontier.add(node, prior=GBFS.heuristic(grid.start, grid.end))
+        frontier.add(node, priority=GreedyBestFirstSearch.heuristic(grid.start, grid.end))
 
         # lưu trữ chi phí từ điểm bắt đầu đến mỗi nút đã duyệt (G-score)
         cost_so_far = {grid.start: 0}
@@ -28,7 +28,7 @@ class GBFS:
 
         while True:
             # Nếu frontier rỗng thì không tìm được lời giải
-            if frontier.isEmpty():
+            if frontier.is_empty():
                 return NoSolution([], list(explored))
             
             # Lấy nút từ frontier
@@ -62,12 +62,12 @@ class GBFS:
                     # Tạo nút con
                     n = grid.get_node(pos=state)
                     n.parent = node
-                    n.estimated_distance = GBFS.heuristic(state, grid.end)
+                    n.estimated_distance = GreedyBestFirstSearch.heuristic(state, grid.end)
 
                     if not n.action:
                         n.action = action
                     
-                    frontier.add(node=n, prior=GBFS.heuristic(state, grid.end))
+                    frontier.add(node=n, priority=GreedyBestFirstSearch.heuristic(state, grid.end))
 
     @staticmethod
     def heuristic(state: tuple[int,int], goal: tuple[int,int]) -> int:

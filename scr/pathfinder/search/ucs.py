@@ -52,7 +52,7 @@ class UCS:
                 return Solution(cells, explored, path_cost)
 
             # Mở rộng các nút kề
-            for action, state in grid.get_neighbours(node.state).items():
+            for action, state in grid.get_neighbors(node.state).items():
                 new_cost = cost_so_far[node.state] + grid.get_cost(state)
 
                 if state not in cost_so_far or new_cost < cost_so_far[state]:

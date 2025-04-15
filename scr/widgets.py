@@ -49,11 +49,11 @@ class Button(Widget):
     ) -> None:
         if surface:
             self.screen = surface
-            self.text = text
-            self.padding = padding
-            self.outline = outline # có vẽ viền không ?
-            self.foreground_color = foreground_color
-            self.background_color = background_color
+        self.text = text
+        self.padding = padding
+        self.outline = outline # có vẽ viền không ?
+        self.foreground_color = foreground_color
+        self.background_color = background_color
 
         # Chọn font
         if bold:
@@ -63,7 +63,7 @@ class Button(Widget):
         
 
         self.text_surf = font.render(self.text, True, foreground_color) # tạo bề mặt text
-        self.text_rect = self.text_surface.get_rect() # lấy kích thước của text
+        self.text_rect = self.text_surf.get_rect() # lấy kích thước của text
         
         # Tính kích thước nút
         self.width = self.text_rect.width + padding * 2
@@ -135,7 +135,7 @@ class Label(Button):
 Menu sẽ hiển thị khi người dùng nhấn vào nút chính.
 """
 class Menu(Widget):
-    def __init(
+    def __init__(
         self, 
         surface: pygame.surface.Surface,
         button: Button,

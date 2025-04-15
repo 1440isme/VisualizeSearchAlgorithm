@@ -300,7 +300,16 @@ clear_btn = Button(
 clear_btn.rect.centery = top.centery
 clear_btn.rect.right = WIDTH - 20
 
-
+# Button instance for Player Mode
+player_btn = Button(
+    "Player Mode", 0, 0,
+    background_color=pygame.Color(*DARK_BLUE),
+    foreground_color=pygame.Color(*WHITE),
+    padding=6, font_size=20, outline=False,
+    surface=WINDOW,
+)
+player_btn.rect.centery = top.centery
+player_btn.rect.right = clear_btn.rect.left - 20
 def main() -> None:
     """Start here"""
     state.label = Label(
@@ -379,7 +388,41 @@ def main() -> None:
                     maze.set_cell(cell_under_mouse, "1")
 
                 cell_under_mouse = (-1, -1)
+            # Handle player movement in Player Mode
+            if state.player_mode and not animator.animating:
+                keys = pygame.key.get_pressed()
+                current_pos = maze.start  # Vị trí hiện tại của người chơi là điểm xuất phát
+                new_pos = list(current_pos)
 
+                # Di chuyển bằng WASD hoặc phím mũi tên
+                if keys[pygame.K_w] or keys[pygame.K_UP]:
+                    new_pos[0] -= 1  # Lên
+                elif keys[pygame.K_s] or keys[pygame.K_DOWN]:
+                    new_pos[0] += 1  # Xuống
+                elif keys[pygame.K_a] or keys[pygame.K_LEFT]:
+                    new_pos[1] -= 1  # Trái
+                elif keys[pygame.K_d] or keys[pygame.K_RIGHT]:
+                    new_pos[1] += 1  # Phải
+
+                # Ensure we have a proper tuple with exactly 2 integers
+                new_pos_tuple = (new_pos[0], new_pos[1])
+
+                # Kiểm tra di chuyển hợp lệ và cập nhật vị trí
+                if maze.is_valid_move(new_pos_tuple):
+                    maze.move_player(current_pos, new_pos_tuple)
+                    state.need_update = True
+                    # Kiểm tra thắng
+                    if new_pos_tuple == maze.goal:
+                        state.player_mode = False
+                        state.label = Label(
+                            "You reached the goal!",
+                            "center", 0,
+                            background_color=pygame.Color(*WHITE),
+                            foreground_color=pygame.Color(*DARK),
+                            padding=6, font_size=20, outline=False,
+                            surface=WINDOW,
+                        )
+                        state.label.rect.bottom = HEADER_HEIGHT - 10
         if state.need_update:
             draw()
 
@@ -477,6 +520,7 @@ def instant_algorithm(maze: Maze, algo_name: str):
     maze.clear_visited()
 
     solution = maze.solve(algo_name=algo_name)
+    print("DEBUG - Algo name:", algo_name)
 
     path = solution.path
     explored = solution.explored
@@ -680,12 +724,27 @@ def draw() -> None:
             )
             state.label.rect.bottom = HEADER_HEIGHT - 10
 
+    # Handle Player Mode button (giữ lại chỉ một đoạn mã này)
+    if player_btn.draw() and not maze.animator.animating:
+        state.player_mode = not state.player_mode  # Chuyển đổi chế độ
+        state.done_visualising = False  # Reset trạng thái trực quan hóa
+        state.label = Label(
+            "Player Mode: Use WASD or Arrows to move" if state.player_mode else "Choose an algorithm",
+            "center", 0,
+            background_color=pygame.Color(*WHITE),
+            foreground_color=pygame.Color(*DARK),
+            padding=6, font_size=20, outline=False,
+            surface=WINDOW,
+        )
+        state.label.rect.bottom = HEADER_HEIGHT - 10
+        if state.player_mode:
+            maze.clear_visited()  # Xóa các ô đã thăm để bắt đầu lại
+
     if state.results_popup:
         state.overlay = True
         if state.results_popup.draw():
             state.results_popup = None
             state.overlay = False
-
 
 def run_single(idx: int) -> None:
     """Run a single algorithm on one maze
