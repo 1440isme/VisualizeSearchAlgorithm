@@ -2,7 +2,7 @@ from ..models.grid import Grid
 from ..models.frontier import QueueFrontier
 from ..models.solution import Solution, NoSolution
 
-class BFS:
+class BreadthFirstSearch:
     @staticmethod
     def search(grid: Grid) -> Solution:
         # tạo nút xuất phát

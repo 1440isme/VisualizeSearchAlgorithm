@@ -62,7 +62,7 @@ class AStarSearch:
                 return Solution(cells, explored, path_cost=path_cost)
 
             # Xác định các hành động có thể thực hiện
-            for action, state in grid.get_neighbours(node.state).items():
+            for action, state in grid.get_neighbors(node.state).items():
                 cost = g_score[node.state] + grid.get_cost(state)
 
                 if state not in g_score or cost < g_score[state]:

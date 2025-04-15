@@ -28,7 +28,7 @@ class Frontier:
         """
         return any(node.state == state for node in self.frontier)
     
-    def isEmpty(self) -> bool:
+    def is_empty(self) -> bool:
         """Kiểm tra frontier có rỗng không
         Returns:
             bool: True nếu frontier rỗng, ngược lại trả về False
@@ -58,7 +58,7 @@ class StackFrontier(Frontier):
         Returns:
             Node: Nút (ô trong ma trận)
         """    
-        if self.isEmpty():
+        if self.is_empty():
             return Exception("Frontier đang rỗng")
         else:
             return self.frontier.pop() # Loại bỏ phần tử cuối cùng của ngăn xếp
@@ -72,7 +72,7 @@ class QueueFrontier(Frontier):
         Returns:
             Node: Nút (ô trong ma trận)
         """    
-        if self.isEmpty():
+        if self.is_empty():
             return Exception("Frontier đang rỗng")
         else:
             return self.frontier.pop(0) # Loại bỏ phần tử đầu tiên của hàng đợi
@@ -81,14 +81,14 @@ class PriorityQueueFrontier(Frontier):
     def __init__ (self):
         self.frontier: list[tuple[int, Node]] = [] # Danh sách các nút trong frontier, mỗi nút được đánh số ưu tiên
     
-    def add(self, node: Node, prior: int = 0) -> None:
+    def add(self, node: Node, priority: int = 0) -> None:
         """Thêm một nút mới vào frontier
         
         Args:
             node (AStarNode): Nút trong mê cung, tham số node là một đối tượng thuộc lớp Node
-            prior (int, optional): Ưu tiên của nút. Mặc định là 0
+            priority (int, optional): Ưu tiên của nút. Mặc định là 0
         """
-        heappush(self.frontier, (prior, node))
+        heappush(self.frontier, (priority, node))
 
     def get(self, state: tuple[int, int]) -> Node | None:
         """Lấy nút theo trạng thái, nếu không tìm thấy trả về None

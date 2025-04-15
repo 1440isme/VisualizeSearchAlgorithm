@@ -58,7 +58,7 @@ class DepthFirstSearch:
                     cells, list(explored_states), path_cost=path_cost)
 
             # Xác định các hành động có thể thực hiện
-            for action, state in grid.get_neighbours(node.state).items():
+            for action, state in grid.get_neighbors(node.state).items():
                 if state in explored_states or frontier.contains_state(state):
                     continue
 
