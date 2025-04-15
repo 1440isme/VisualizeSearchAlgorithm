@@ -257,18 +257,18 @@ class Maze:
                 if not center in nodes_to_animate:
                     self._draw_rect((i, j), node.color)
                     continue
-            # nếu có animation -> check dsach các AnimatingNode tại center
-            for k in range(len(nodes_to_animate[center]) - 1, -1, -1):
-                animating_node = nodes_to_animate[center][k]
-                if animating_node.progress > 0: # đang diễn ra
-                    self._draw_rect(
-                        coords=(i, j),
-                        color = animating_node.color,
-                        node = animating_node
-                    )
-                    break
-            else:
-                self._draw_rect((i, j), node.color)
+                # nếu có animation -> check dsach các AnimatingNode tại center
+                for k in range(len(nodes_to_animate[center]) - 1, -1, -1):
+                    animating_node = nodes_to_animate[center][k]
+                    if animating_node.progress > 0: # đang diễn ra
+                        self._draw_rect(
+                            coords=(i, j),
+                            color = animating_node.color,
+                            node = animating_node
+                        )
+                        break
+                else:
+                    self._draw_rect((i, j), node.color)
 
     def generate_maze(
         self, 
@@ -513,4 +513,38 @@ class Maze:
             image_rect = GOAL.get_rect(
                 center=(x + CELL_SIZE // 2, y + CELL_SIZE // 2))
             self.surface.blit(GOAL, image_rect)
+    def is_valid_move(self, pos: tuple[int, int]) -> bool:
+        """Check if the new position is a valid move for the player.
 
+        Args:
+            pos (tuple[int, int]): The new position to check.
+
+        Returns:
+            bool: True if the move is valid, False otherwise.
+        """
+        # Check if the position is within the maze bounds
+        row, col = pos
+        if not (0 <= row < self.height and 0 <= col < self.width):
+            return False
+
+        # Check if the position is not a wall
+        if self.maze[row][col].value == "#":
+            return False
+
+        return True
+
+    def move_player(self, current_pos: tuple[int, int], new_pos: tuple[int, int]) -> None:
+        """Move the player from the current position to the new position.
+
+        Args:
+            current_pos (tuple[int, int]): The current position of the player.
+            new_pos (tuple[int, int]): The new position to move the player to.
+        """
+        # Update the maze: set the current position to an empty cell
+        self.set_cell(current_pos, "1", forced=True)
+
+        # Update the maze: set the new position to the start node ("A")
+        self.set_cell(new_pos, "A", forced=True)
+
+        # Update the start position
+        self.start = new_pos

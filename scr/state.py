@@ -14,6 +14,7 @@ class State:
     results: dict[str, dict[str, float]]
     run_all_mazes = False
     results_popup: Popup | None = None
+    player_mode: bool = False
 
     # Nếu chưa có -> tạo mới, còn đã có -> trả lại cái đã có
     # -> Đảm bảo mọi chương trình dùng chung 1 trạng thái duy nhất
