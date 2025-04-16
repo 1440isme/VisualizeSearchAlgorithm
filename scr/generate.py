@@ -16,6 +16,9 @@ class MazeGenerator:
 
         self.animator = animator
         self.maze: Maze = animator.maze
+        self.width = self.maze.width
+        self.height = self.maze.height
+
 
     def _is_valid_cell(self, pos: tuple[int, int]) -> bool:
         """Check if the provided coords are valid
@@ -30,6 +33,17 @@ class MazeGenerator:
 
         return 0 <= rowIdx < self.maze.height \
             and 0 <= colIdx < self.maze.width
+
+    def _should_preserve_cell(self, pos: tuple[int, int]) -> bool:
+        """Kiểm tra xem ô có phải là điểm xuất phát hoặc điểm đích không
+
+        Args:
+            pos (tuple[int, int]): Vị trí ô cần kiểm tra
+
+        Returns:
+            bool: True nếu ô cần được bảo vệ, False nếu không
+        """
+        return pos == self.maze.start or pos == self.maze.goal
 
     def _get_two_step_neighbors(
         self,
@@ -66,18 +80,19 @@ class MazeGenerator:
     def randomised_prims_algorithm(self) -> None:
         """Generate maze by Randomised Prim's algorithm
         """
-
-        # Create a simpler copy of the actual maze
+        # Tạo bản sao đơn giản của mê cung thực tế
         maze = [["#" for __ in range(self.maze.width)]
                 for _ in range(self.maze.height)]
 
+        # Đánh dấu điểm xuất phát và kết thúc
         maze[self.maze.start[0]][self.maze.start[1]] = "1"
         maze[self.maze.goal[0]][self.maze.goal[1]] = "1"
 
-        # Put walls everywhere
+        # Đặt tường ở khắp mọi nơi ngoại trừ điểm xuất phát và kết thúc
         for rowIdx in range(self.maze.height):
             for colIdx in range(self.maze.width):
-                self.maze.set_cell((rowIdx, colIdx), "#")
+                if not self._should_preserve_cell((rowIdx, colIdx)):
+                    self.maze.set_cell((rowIdx, colIdx), "#")
 
         # Create a list for storing frontier cells
         frontier = self._get_two_step_neighbors(maze, self.maze.start, "#")
@@ -146,14 +161,14 @@ class MazeGenerator:
     def randomised_dfs(self) -> None:
         """Generate maze by randomised dfs
         """
-
         # For animating nodes
         nodes_to_animate = []
 
-        # Draw Walls everywhere except the start and goal pos
+        # Vẽ tường ở khắp mọi nơi ngoại trừ điểm xuất phát và kết thúc
         for rowIdx in range(self.maze.height):
-            for colIdx in range(self.maze.width):
-                self.maze.set_cell((rowIdx, colIdx), "#")
+            for colIdx in range(self.width):
+                if not self._should_preserve_cell((rowIdx, colIdx)):
+                    self.maze.set_cell((rowIdx, colIdx), "#")
 
         stack = [self.maze.start]
 
@@ -212,10 +227,13 @@ class MazeGenerator:
     def basic_weight_maze(self) -> None:
         """Generate a basic weight maze
         """
-
         nodes = []
         for rowIdx in range(self.maze.width):
             for colIdx in range(self.maze.height):
+                # Bỏ qua điểm xuất phát và kết thúc
+                if self._should_preserve_cell((colIdx, rowIdx)):
+                    continue
+                    
                 if random.randint(1, 10) < 8:
                     continue
 
@@ -239,6 +257,10 @@ class MazeGenerator:
         nodes = []
         for rowIdx in range(self.maze.width):
             for colIdx in range(self.maze.height):
+                # Bỏ qua điểm xuất phát và kết thúc
+                if self._should_preserve_cell((colIdx, rowIdx)):
+                    continue
+                    
                 if random.randint(1, 10) < 8:
                     continue
 
@@ -340,7 +362,7 @@ class MazeGenerator:
         nodes_to_animate = []
         for i in range(y1, y2 + 1):
             wall_coords[horizontal] = i
-            if hole_coords == tuple(wall_coords):
+            if hole_coords == tuple(wall_coords) or self._should_preserve_cell((wall_coords[0], wall_coords[1])):
                 continue
 
             # Create a rectangle
