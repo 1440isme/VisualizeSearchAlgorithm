@@ -548,3 +548,23 @@ class Maze:
 
         # Update the start position
         self.start = new_pos
+
+    def reset_player_position(self) -> None:
+        """Reset the player's position to the original start position"""
+        # Get the current start position (which may have been moved during play)
+        current_pos = self.start
+        
+        # Get back to the original position (1/4 of maze width, at the middle height)
+        start_col = self.width // 4
+        original_pos = (self.height // 2, start_col)
+        
+        # Only reset if the position actually changed
+        if current_pos != original_pos:
+            # Clear the current start cell
+            self.set_cell(current_pos, "1", forced=True)
+            
+            # Set the original position as the new start
+            self.set_cell(original_pos, "A", forced=True)
+            
+            # Update the start position
+            self.start = original_pos
