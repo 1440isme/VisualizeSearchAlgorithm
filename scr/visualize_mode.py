@@ -62,6 +62,17 @@ back_btn = Button(
 back_btn.rect.centery = top.centery
 back_btn.rect.x = 20
 
+# ? button for legends
+legends_btn = Button(
+    "?", 0, 0,
+    background_color=pygame.Color(*DARK_BLUE),
+    foreground_color=pygame.Color(*WHITE),
+    padding=8, font_size=20, outline=False,
+    surface=None,
+)
+legends_btn.rect.bottom = HEADER_HEIGHT - 20
+# legends_btn.rect.right = WIDTH - 20
+
 # Algorithms list
 algorithm_btn = Button(
     surface=None,
@@ -324,6 +335,7 @@ def initialize(window):
     
     clear_btn.surface = window
     back_btn.surface = window
+    legends_btn.surface = window
 
 
 def draw(window, state, maze):
@@ -333,48 +345,7 @@ def draw(window, state, maze):
     pygame.draw.rect(window, DARK_BLUE, top)
     title.draw()
     back_btn.draw()
-
-    # Draw maze legend
-    texts = {
-        "Start Node": WHITE,
-        "Visited Node": BLUE,
-        "Shortest-Path Node": YELLOW,
-        "Unvisited Node": WHITE,
-        "Wall Node": DARK,
-        "Weighted Node": WHITE,
-        "Target Node": WHITE,
-    }
-
-    x = 50
-    y = top.bottom + 20
-    for text in texts:
-        # Rectangle (Symbol)
-        pygame.draw.rect(window, texts[text], (x, y, 30, 30))
-        pygame.draw.rect(window, GRAY, (x, y, 30, 30), width=1)
-
-        # Text (Meaning)
-        text_surf = FONT_18.render(text, True, DARK)
-        text_rect = text_surf.get_rect()
-        text_rect.centery = y + 30 // 2
-
-        window.blit(text_surf, (x + 30 + 10, text_rect.y))
-
-        # Formating
-        if texts[text] == DARK:
-            y += text_surf.get_height() + 30
-        elif text != "Weighted Node":
-            x += 30 + 10 + text_surf.get_width() + 75
-
-        # Draw images for weighted, start and target node
-        if text == "Weighted Node":
-            window.blit(WEIGHT, (x + 3, y + 3))
-            x = 50
-        elif text == "Start Node":
-            image_rect = START.get_rect(center=(65, top.bottom + 35))
-            window.blit(START, image_rect)
-        elif text == "Target Node":
-            image_rect = GOAL.get_rect(center=(65, y + 15))
-            window.blit(GOAL, image_rect)
+    legends_btn.draw()
 
     # Draw state labels
     state.label.draw()
@@ -401,7 +372,13 @@ def draw(window, state, maze):
                 instant_algorithm(maze, text)
 
             state.overlay = False
-
+            
+    # Handle legends button click
+    if legends_btn.draw() and not maze.animator.animating:
+        state.overlay = True
+        # Create and display legends popup
+        show_legends_popup(window, state)
+        
     if (speed_menu.draw() or speed_menu.clicked) \
             and not maze.animator.animating:
         state.overlay = True
@@ -832,6 +809,82 @@ def show_results(results: list[tuple[str, dict[str, float]]], window, state) -> 
                 children=children,
             )
         ],
+    )
+
+    popup.update_center(window.get_rect().center)
+    popup.set_surface(window)
+    state.results_popup = popup
+
+
+def show_legends_popup(window, state) -> None:
+    """Display legends popup
+
+    Args:
+        window: The window surface
+        state (State): Application state
+    """
+    children = [
+        Label(
+            "LEGENDS", 0, 0,
+            background_color=pygame.Color(*DARK),
+            foreground_color=pygame.Color(*WHITE),
+            padding=10, font_size=20, bold=True,
+            surface=window,
+        ),
+        Label(
+            "A: Start Node", 0, 0,
+            background_color=pygame.Color(*WHITE),
+            foreground_color=pygame.Color(*DARK),
+            padding=6, font_size=18, outline=False,
+            surface=window,
+        ),
+        Label(
+            "B: Goal Node", 0, 0,
+            background_color=pygame.Color(*WHITE),
+            foreground_color=pygame.Color(*DARK),
+            padding=6, font_size=18, outline=False,
+            surface=window,
+        ),
+        Label(
+            "#: Wall Node", 0, 0,
+            background_color=pygame.Color(*DARK),
+            foreground_color=pygame.Color(*WHITE),
+            padding=6, font_size=18, outline=False,
+            surface=window,
+        ),
+        Label(
+            "V: Visited Node", 0, 0,
+            background_color=pygame.Color(*BLUE),
+            foreground_color=pygame.Color(*WHITE),
+            padding=6, font_size=18, outline=False,
+            surface=window,
+        ),
+        Label(
+            "*: Path Node", 0, 0,
+            background_color=pygame.Color(*YELLOW),
+            foreground_color=pygame.Color(*DARK),
+            padding=6, font_size=18, outline=False,
+            surface=window,
+        ),
+        Label(
+            "2-9: Weighted Nodes", 0, 0,
+            background_color=pygame.Color(*GRAY),
+            foreground_color=pygame.Color(*DARK),
+            padding=6, font_size=18, outline=False,
+            surface=window,
+        ),
+    ]
+
+    popup = Popup(
+        window,
+        0,
+        0,
+        padding=20,
+        color=DARK,
+        orientation=Orientation.VERTICAL,
+        x_align=Alignment.CENTER,
+        y_align=Alignment.CENTER,
+        children=children,
     )
 
     popup.update_center(window.get_rect().center)
