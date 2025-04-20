@@ -26,7 +26,7 @@ class BeamSearch:
                 if node.state == goal:
                     return BeamSearch.reconstruct_path(node, explored)
 
-                for action, neighbor in grid.get_neighbours(node.state).items():
+                for action, neighbor in grid.get_neighbors(node.state).items():
                     if neighbor not in visited_set:
                         child = grid.get_node(pos=neighbor)
                         child.parent = node

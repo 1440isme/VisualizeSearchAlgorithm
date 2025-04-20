@@ -70,8 +70,9 @@ legends_btn = Button(
     padding=8, font_size=20, outline=False,
     surface=None,
 )
-legends_btn.rect.bottom = HEADER_HEIGHT - 20
-# legends_btn.rect.right = WIDTH - 20
+legends_btn.rect.bottom = HEADER_HEIGHT - 10
+legends_btn.rect.right = WIDTH - 20
+
 
 # Algorithms list
 algorithm_btn = Button(
@@ -103,7 +104,7 @@ algo_menu = Menu(
             surface=None,
             text="Dijkstra's Search",
             x=algorithm_btn.rect.x - 40,
-            y=algorithm_btn.rect.y + algorithm_btn.height * 2,
+            y=0,
             background_color=pygame.Color(*DARK_BLUE),
             foreground_color=pygame.Color(*WHITE),
             font_size=20, outline=False
@@ -112,7 +113,7 @@ algo_menu = Menu(
             surface=None,
             text="Greedy Best First Search",
             x=algorithm_btn.rect.x - 40,
-            y=algorithm_btn.rect.y + algorithm_btn.height * 3,
+            y=0,
             background_color=pygame.Color(*DARK_BLUE),
             foreground_color=pygame.Color(*WHITE),
             font_size=20, outline=False
@@ -121,7 +122,7 @@ algo_menu = Menu(
             surface=None,
             text="Breadth First Search",
             x=algorithm_btn.rect.x - 40,
-            y=algorithm_btn.rect.y + algorithm_btn.height * 3,
+            y=0,
             background_color=pygame.Color(*DARK_BLUE),
             foreground_color=pygame.Color(*WHITE),
             font_size=20, outline=False
@@ -130,7 +131,43 @@ algo_menu = Menu(
             surface=None,
             text="Depth First Search",
             x=algorithm_btn.rect.x - 40,
-            y=algorithm_btn.rect.y + algorithm_btn.height * 4,
+            y=0,
+            background_color=pygame.Color(*DARK_BLUE),
+            foreground_color=pygame.Color(*WHITE),
+            font_size=20, outline=False
+        ),
+        Button(
+            surface=None,
+            text="Uniform Cost Search",
+            x=algorithm_btn.rect.x - 40,
+            y=0,
+            background_color=pygame.Color(*DARK_BLUE),
+            foreground_color=pygame.Color(*WHITE),
+            font_size=20, outline=False
+        ),
+        Button(
+            surface=None,
+            text="Iterative Deepening DFS",
+            x=algorithm_btn.rect.x - 40,
+            y=0,
+            background_color=pygame.Color(*DARK_BLUE),
+            foreground_color=pygame.Color(*WHITE),
+            font_size=20, outline=False
+        ),
+        Button(
+            surface=None,
+            text="Iterative Deepening A*",
+            x=algorithm_btn.rect.x - 40,
+            y=0,
+            background_color=pygame.Color(*DARK_BLUE),
+            foreground_color=pygame.Color(*WHITE),
+            font_size=20, outline=False
+        ),
+        Button(
+            surface=None,
+            text="Beam Search",
+            x=algorithm_btn.rect.x - 40,
+            y=0,
             background_color=pygame.Color(*DARK_BLUE),
             foreground_color=pygame.Color(*WHITE),
             font_size=20, outline=False
@@ -720,8 +757,10 @@ def show_results(results: list[tuple[str, dict[str, float]]], window, state) -> 
         ),
     ])
 
+    # Use different colors for better visual distinction between algorithms
+    # First two algorithms get GREEN_2 (best performers), next two get YELLOW, rest get GRAY
     colors = [GREEN_2, GREEN_2, YELLOW, YELLOW]
-    colors.extend([GRAY] * (len(results) - 4))
+    colors.extend([GRAY] * (len(results) - 4))  # Ensure we have enough colors for all algorithms
 
     for i, result in enumerate(results):
         children.append([
@@ -802,7 +841,7 @@ def show_results(results: list[tuple[str, dict[str, float]]], window, state) -> 
             Table(
                 x=0,
                 y=0,
-                rows=6,
+                rows=len(children),  # Dynamic row count based on number of algorithms
                 columns=5,
                 padding=20,
                 color=DARK,
@@ -832,35 +871,35 @@ def show_legends_popup(window, state) -> None:
             surface=window,
         ),
         Label(
-            "A: Start Node", 0, 0,
+            ">: Start Node", 0, 0,
             background_color=pygame.Color(*WHITE),
             foreground_color=pygame.Color(*DARK),
             padding=6, font_size=18, outline=False,
             surface=window,
         ),
         Label(
-            "B: Goal Node", 0, 0,
+            "O: Goal Node", 0, 0,
             background_color=pygame.Color(*WHITE),
             foreground_color=pygame.Color(*DARK),
             padding=6, font_size=18, outline=False,
             surface=window,
         ),
         Label(
-            "#: Wall Node", 0, 0,
+            "   Wall Node ", 0, 0,
             background_color=pygame.Color(*DARK),
             foreground_color=pygame.Color(*WHITE),
             padding=6, font_size=18, outline=False,
             surface=window,
         ),
         Label(
-            "V: Visited Node", 0, 0,
+            " Visited Node", 0, 0,
             background_color=pygame.Color(*BLUE),
             foreground_color=pygame.Color(*WHITE),
             padding=6, font_size=18, outline=False,
             surface=window,
         ),
         Label(
-            "*: Path Node", 0, 0,
+            " Path Node  ", 0, 0,
             background_color=pygame.Color(*YELLOW),
             foreground_color=pygame.Color(*DARK),
             padding=6, font_size=18, outline=False,

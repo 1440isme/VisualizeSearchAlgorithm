@@ -371,6 +371,10 @@ class Maze:
             "Greedy Best First Search": Search.GREEDY_BEST_FIRST_SEARCH,
             "Breadth First Search": Search.BREADTH_FIRST_SEARCH,
             "Depth First Search": Search.DEPTH_FIRST_SEARCH,
+            "Uniform Cost Search": Search.UNIFORM_COST_SEARCH,
+            "Iterative Deepening DFS": Search.ITERATIVE_DEEPENING_SEARCH,
+            "Iterative Deepening A*": Search.IDA_STAR_SEARCH,
+            "Beam Search": Search.BEAM_SEARCH,
         }
 
         # khởi tạo grid
