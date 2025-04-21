@@ -32,6 +32,7 @@ BLUE_2 = (81, 145, 228)
 DARK_BLUE_2 = (44, 67, 208)
 PURPLE = (17, 104, 217)
 
+
 # Màu trực quan hóa
 VIZ_VISITED = (108, 142, 191)     # Xanh dương nhẹ cho các nút đã thăm
 VIZ_PATH = (255, 213, 79)         # Vàng sáng cho đường đi
@@ -97,6 +98,16 @@ SHADOW_COLOR = (0, 0, 0, 40)  # RGBA với alpha=40 cho bóng mờ
 ANIMATION_SPEED = 200  # ms
 HOVER_SCALE = 1.05  # Tỉ lệ phóng to khi hover
 TRANSITION_SPEED = 150  # ms cho các hiệu ứng chuyển tiếp
+
+# UI Constants - Các hằng số cho thiết kế giao diện nhất quán
+BUTTON_PADDING = 10
+BUTTON_FONT_SIZE = 18
+BUTTON_BORDER_RADIUS = 12
+BUTTON_MARGIN = 20  # Khoảng cách giữa các nút
+BUTTON_SHADOW_OFFSET = 3
+BUTTON_SHADOW_COLOR = (0, 0, 0, 40)
+BUTTON_HOVER_ALPHA = 30
+BUTTON_CLICK_ALPHA = 60
 
 # Load hình ảnh và chữ
 WEIGHT = pygame.image.load("assets/images/weight.png")

@@ -146,6 +146,7 @@ class Menu(Widget):
         self.children = children
         self.clicked = False # trạng thái của menu (đang mở hay ko)
         self.selected: Widget | None = None # lưu lại Widget được chọn từ menu (nếu có)
+        self.custom_button = None  # Sẽ lưu trữ reference đến CustomButton nếu được dùng
 
         self.height = sum(child.rect.height for child in children) # lấy tổng chiều cao của các mục
         self.width = max(child.rect.width for child in children) # lấy chiều rộng của thằng to nhất
@@ -186,8 +187,17 @@ class Menu(Widget):
         Returns: 
             bool: Khi bất kì button trong menu đc nhấn
         """
-
-        clicked = self.button.draw()
+        # Kiểm tra xem nút có được tham chiếu từ CustomButton không
+        # Nếu không, gọi draw thông thường của Button
+        clicked = False
+        if hasattr(self, 'custom_button') and self.custom_button:
+            # Chỉ kiểm tra click mà không vẽ, vì đã được vẽ trong visualize_mode.py
+            mouse_pos = pygame.mouse.get_pos()
+            clicked = (self.button.rect.collidepoint(mouse_pos) and 
+                     pygame.mouse.get_pressed()[0])
+        else:
+            clicked = self.button.draw()
+            
         self.selected = None
 
         if clicked:
