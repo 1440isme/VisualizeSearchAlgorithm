@@ -190,6 +190,12 @@ class MazeGenerator:
             if unvisited_neighbors:
                 next = random.choice(unvisited_neighbors)
                 stack.append(curr)
+                # **THÊM**: carve the path in the grid
+                # Set the neighbour cell to empty
+                self.maze.set_cell(next, "1")
+                # Compute the wall between and carve it
+                wall = ((curr[0] + next[0]) // 2, (curr[1] + next[1]) // 2)
+                self.maze.set_cell(wall, "1")
 
                 x, y = self.maze.coords[next[0]][next[1]]
                 nodes_to_animate.append(
@@ -252,16 +258,46 @@ class MazeGenerator:
         self.maze.animator.add_nodes_to_animate(nodes, gap=2)
 
     def basic_random_maze(self) -> None:
-        """Generate a basic random maze
+        """Generate a basic random maze with wall density from level settings
         """
+        # Lấy thông tin wall_density từ level hiện tại
+        try:
+            from .levels import LevelManager
+            level_manager = LevelManager()
+            current_level = level_manager.get_current_level()
+            wall_density = current_level.get("wall_density", 0.3)  # Mặc định là 0.3 nếu không có cấu hình
+        except (ImportError, AttributeError):
+            wall_density = 0.3  # Giá trị mặc định
+            
+        # Chuyển đổi wall_density thành tỷ lệ cụ thể cho phép ngẫu nhiên (1-10)
+        # Ví dụ: wall_density = 0.3 => threshold = 7 (3 trong 10 ô sẽ là tường)
+        # wall_density = 1.0 => threshold = 5 (5 trong 10 ô sẽ là tường)
+        if wall_density <= 0.2:
+            threshold = 8  # 20% là tường
+        elif wall_density <= 0.4:
+            threshold = 7  # 30% là tường
+        elif wall_density <= 0.6:
+            threshold = 6  # 40% là tường
+        elif wall_density <= 0.8:
+            threshold = 5  # 50% là tường
+        elif wall_density <= 1.0:
+            threshold = 4  # 60% là tường
+        elif wall_density <= 1.2:
+            threshold = 3  # 70% là tường
+        else:
+            threshold = 2  # 80% là tường
+            
+        print(f"Generating maze with wall density: {wall_density}, threshold: {threshold}")
+            
         nodes = []
         for rowIdx in range(self.maze.width):
             for colIdx in range(self.maze.height):
                 # Bỏ qua điểm xuất phát và kết thúc
                 if self._should_preserve_cell((colIdx, rowIdx)):
                     continue
-                    
-                if random.randint(1, 10) < 8:
+                
+                # Sử dụng threshold dựa trên wall_density để quyết định có tạo tường hay không
+                if random.randint(1, 10) < threshold:
                     continue
 
                 x, y = self.maze.coords[colIdx][rowIdx]

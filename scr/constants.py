@@ -113,6 +113,7 @@ BUTTON_CLICK_ALPHA = 60
 WEIGHT = pygame.image.load("assets/images/weight.png")
 START = pygame.image.load("assets/images/triangle.png")
 GOAL = pygame.image.load("assets/images/circle.png")
+COLLECTIBLE = pygame.image.load("assets/images/collectible.png") # Added collectible image
 FONT_14 = pygame.font.Font("assets/font/Montserrat-Regular.ttf", 14)
 FONT_16 = pygame.font.Font("assets/font/Montserrat-Regular.ttf", 16)
 FONT_18 = pygame.font.Font("assets/font/Montserrat-Regular.ttf", 18)

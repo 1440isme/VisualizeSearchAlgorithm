@@ -511,14 +511,6 @@ def handle_menus(window, state, maze):
                 speed_text = speed_menu.selected.text
                 button_objects['speed'].text = speed_text
                 
-                # # Cập nhật màu sắc tương ứng với tốc độ
-                # if speed_text == "Fast":
-                #     ui_buttons['speed'].color = ACCENT_SUCCESS
-                # elif speed_text == "Medium":
-                #     ui_buttons['speed'].color = ACCENT_WARNING
-                # else:  # Slow
-                #     ui_buttons['speed'].color = ACCENT_NEUTRAL
-                
                 # Cập nhật speed_label
                 state.speed_label = Label(
                     surface=window,
@@ -550,7 +542,6 @@ def handle_menus(window, state, maze):
         state.overlay = True
 
         if generate_menu.selected:
-            maze.clear_board()
             text = state.label.text
 
             def callback():
@@ -564,7 +555,8 @@ def handle_menus(window, state, maze):
                 )
                 state.label.rect.bottom = HEADER_HEIGHT - 10
 
-            maze.generate_maze(
+            # Sử dụng create_standard_maze thay vì gọi generate_maze trực tiếp
+            maze.create_standard_maze(
                 algorithm=generate_menu.selected.text,
                 after_generation=callback
             )
