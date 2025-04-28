@@ -13,7 +13,6 @@ LEVELS = [
         "description": "Simple maze - Learn the basics",
         "algorithm": "Randomised DFS",
         "time_limit": 30,
-        "collectibles": 0,  # No collectibles in new game mode
         "maze_size_factor": 0.4,  # 40% of maximum size
         "unlocked": True  # First level is always unlocked
     },
@@ -23,7 +22,6 @@ LEVELS = [
         "description": "A more complex path-finding challenge",
         "algorithm": "Randomised DFS",
         "time_limit": 60,
-        "collectibles": 0,  # No collectibles in new game mode
         "maze_size_factor": 0.55,  # 55% of maximum size
         "unlocked": True  # Mở khóa sẵn level 2
     },
@@ -33,7 +31,6 @@ LEVELS = [
         "description": "More complex paths and labyrinths",
         "algorithm": "Randomised DFS",
         "time_limit": 80,
-        "collectibles": 0,  # No collectibles in new game mode
         "maze_size_factor": 0.7,  # 70% of maximum size
         "unlocked": False
     },
@@ -43,7 +40,6 @@ LEVELS = [
         "description": "Challenging maze with complex paths",
         "algorithm": "Randomised DFS",
         "time_limit": 130,
-        "collectibles": 0,  # No collectibles in new game mode
         "maze_size_factor": 0.85,  # 85% of maximum size
         "unlocked": False
     },
@@ -53,7 +49,6 @@ LEVELS = [
         "description": "Complex and challenging labyrinth",
         "algorithm": "Randomised DFS",
         "time_limit": 150,
-        "collectibles": 0,  # No collectibles in new game mode
         "maze_size_factor": 1.0,  # 100% of maximum size (full size)
         "unlocked": False
     }
@@ -117,13 +112,9 @@ class LevelManager:
         
         return width, height
         
-    def generate_collectible_positions(self, width, height, wall_positions):
-        """Generate random positions for collectibles in the current level"""
-        # In the new game mode, we don't use collectibles
-        return []
+
     
     def is_near_start_or_goal(self, pos, width, height):
-        """Check if position is near start or goal to avoid placing collectibles there"""
         row, col = pos
         
         # Start is typically at 1/4 of the width

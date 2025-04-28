@@ -29,7 +29,6 @@ from .constants import (
     YELLOW,
     START,
     GOAL,
-    COLLECTIBLE
 )
 
 # Top bar
@@ -203,19 +202,8 @@ def draw(window, state, maze):
             image_rect = GOAL.get_rect(center=(65, top.bottom + 35))
             window.blit(GOAL, image_rect)
 
-    # Draw collectible legend if level has collectibles
-    current_level = level_manager.get_current_level()
-    if current_level["collectibles"] > 0:
-        collectible_text = f"Collectibles: {maze.get_collected_count()}/{maze.get_total_collectibles()}"
-        text_surf = FONT_18.render(collectible_text, True, DARK)
-        text_rect = text_surf.get_rect(topleft=(50, y + 10))
-        window.blit(text_surf, text_rect)
-        
-        # Draw collectible icon
-        image_rect = COLLECTIBLE.get_rect(center=(80, y + 40))
-        window.blit(COLLECTIBLE, image_rect)
-
     # Draw level info
+    current_level = level_manager.get_current_level()
     level_text = f"Level {current_level['id']}: {current_level['name']}"
     level_surf = FONT_BOLD_20.render(level_text, True, DARK)
     level_rect = level_surf.get_rect(topright=(WIDTH - 50, top.bottom + 20))
@@ -269,13 +257,6 @@ def draw(window, state, maze):
                 state.need_update = True
                 # Update wall positions after generation
                 maze.update_wall_positions()
-                
-                # Add collectibles for the current level
-                current_level = level_manager.get_current_level()
-                collectible_positions = level_manager.generate_collectible_positions(
-                    maze.width, maze.height, maze.wall_positions
-                )
-                maze.add_collectibles(collectible_positions)
 
             maze.generate_maze(
                 algorithm=generate_menu.selected.text,

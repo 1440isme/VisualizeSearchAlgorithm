@@ -31,8 +31,7 @@ from .constants import (
     DARK,
     WHITE,
     GREEN,
-    YELLOW,
-    COLLECTIBLE
+    YELLOW
 )
 
 # ================ Thiết kế lớp MazeNode ================
@@ -83,8 +82,8 @@ class Maze:
 
 
         self.speed = "Fast"
-        self.collectibles = []
-        self.collected = []
+        
+
         self.wall_positions = []
 
     def _generate_coordinates(self) -> list[list[tuple[int, int]]]:
@@ -150,9 +149,7 @@ class Maze:
             case "*": # nằm trong đường đi ngắn nhất; Hiện thị animation
                 cost = self.maze[pos[0]][pos[1]].cost
                 color = YELLOW
-            case "C": # collectible item
-                cost = 1  # Cost for walking through a collectible is 1
-                color = WHITE
+            
             case _: # mặc định; cho phép tạo mê cung có trọng số
                 try:
                     cost = int(value)
@@ -495,14 +492,10 @@ class Maze:
                 width=1
             )
 
-        # Draw collectibles
-        if coords in self.collectibles and coords not in self.collected:
-            image_rect = COLLECTIBLE.get_rect(
-                center=(x + CELL_SIZE // 2, y + CELL_SIZE // 2))
-            self.surface.blit(COLLECTIBLE, image_rect)
+        
 
         # Vẽ icon nếu là ô có cost > 1
-        elif (n := self.maze[row][col]).cost > 1:
+        if (n := self.maze[row][col]).cost > 1:
             image_rect = WEIGHT.get_rect(
                 center=(x + CELL_SIZE // 2, y + CELL_SIZE // 2))
             self.surface.blit(WEIGHT, image_rect)
@@ -552,8 +545,6 @@ class Maze:
             current_pos (tuple[int, int]): The current position of the player.
             new_pos (tuple[int, int]): The new position to move the player to.
         """
-        # Check if the new position has a collectible
-        self.check_collectible(new_pos)
         
         # Update the maze: set the current position to an empty cell
         self.set_cell(current_pos, "1", forced=True)
@@ -584,51 +575,7 @@ class Maze:
             # Update the start position
             self.start = original_pos
 
-    def add_collectibles(self, collectible_positions):
-        """Add collectibles to the maze at the specified positions
-        
-        Args:
-            collectible_positions: List of tuple positions for collectibles
-        """
-        self.collectibles = collectible_positions
-        self.collected = []
-        
-        # Place collectibles on the maze
-        for pos in self.collectibles:
-            # Only place if the position is not a wall, start, or goal
-            if self.maze[pos[0]][pos[1]].value != "#" and pos not in (self.start, self.goal):
-                self.maze[pos[0]][pos[1]].value = "C"  # Mark as collectible
-                
-    def check_collectible(self, pos):
-        """Check if the position is a collectible and collect it if so
-        
-        Args:
-            pos: The position to check
-            
-        Returns:
-            bool: True if a collectible was collected, False otherwise
-        """
-        if pos in self.collectibles and pos not in self.collected:
-            self.collected.append(pos)
-            return True
-        return False
-        
-    def get_collected_count(self):
-        """Get the number of collected collectibles
-        
-        Returns:
-            int: Number of collectibles collected
-        """
-        return len(self.collected)
-        
-    def get_total_collectibles(self):
-        """Get the total number of collectibles in the level
-        
-        Returns:
-            int: Total number of collectibles
-        """
-        return len(self.collectibles)
-        
+    
     def update_wall_positions(self):
         """Update the list of wall positions after maze generation"""
         self.wall_positions = []
@@ -724,9 +671,8 @@ class Maze:
         # Regenerate screen coordinates
         self.coords = self._generate_coordinates()
         
-        # Reset collectibles
-        self.collectibles = []
-        self.collected = []
+        
+
         self.wall_positions = []
         
         # Important: Reinitialize the generator with the new dimensions
