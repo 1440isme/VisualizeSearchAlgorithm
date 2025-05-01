@@ -681,3 +681,46 @@ class Maze:
             animator = self.animator
             # Reinitialize the generator
             self.generator = MazeGenerator(animator)
+
+    def generate_challenging_map(self, after_generation: Optional[GenerationCallback] = None) -> None:
+        """Generate a challenging map with multiple paths and dead ends, ensuring a path to the goal exists."""
+        import random
+
+        # Clear the board first
+        self.clear_board()
+
+        # Generate a base maze using Randomised DFS to ensure a path exists
+        self.generator.randomised_dfs()
+
+        # Add dead ends and extra paths
+        for _ in range(random.randint(5, 15)):  # Randomly add 5 to 15 dead ends
+            row = random.randint(1, self.height - 2)
+            col = random.randint(1, self.width - 2)
+
+            if self.maze[row][col].value == "1":  # Only add walls to empty cells
+                self.set_cell((row, col), "#")
+
+        for _ in range(random.randint(3, 10)):  # Randomly add 3 to 10 extra paths
+            row = random.randint(1, self.height - 2)
+            col = random.randint(1, self.width - 2)
+
+            if self.maze[row][col].value == "#":  # Only add paths to wall cells
+                self.set_cell((row, col), "1")
+
+        # Ensure start and goal positions are valid
+        self.set_cell(self.start, "A", forced=True)
+        self.set_cell(self.goal, "B", forced=True)
+
+        # Validate that a path exists from start to goal
+        solution = self.solve("Breadth First Search")
+        if not solution.path:
+            print("No path found, regenerating challenging map...")
+            self.generate_challenging_map(after_generation)
+            return
+
+        # Update wall positions
+        self.update_wall_positions()
+
+        # Call the after_generation callback if provided
+        if after_generation:
+            after_generation()

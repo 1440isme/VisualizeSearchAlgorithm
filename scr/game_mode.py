@@ -55,92 +55,17 @@ back_btn = Button(
 back_btn.rect.centery = top.centery
 back_btn.rect.x = 20
 
-# Generate maze button
-generate_btn = Button(
-    "Generate Maze", 0, 0,
+
+# Add a new button for challenging map generation
+challenging_map_btn = Button(
+    "Challenging Map", 0, 0,
     background_color=pygame.Color(*DARK_BLUE),
     foreground_color=pygame.Color(*WHITE),
     font_size=20, outline=False,
     surface=None,
 )
-generate_btn.rect.centery = top.centery
-generate_btn.rect.left = 200
-
-generate_menu = Menu(
-    surface=None,
-    button=generate_btn,
-    children=[
-        Button(
-            surface=None,
-            text="Recursive Division",
-            x=generate_btn.rect.x - 40,
-            y=generate_btn.rect.y + generate_btn.height,
-            background_color=pygame.Color(*DARK_BLUE),
-            foreground_color=pygame.Color(*WHITE),
-            font_size=20, outline=False
-        ),
-        Button(
-            surface=None,
-            text="Prim's Algorithm",
-            x=generate_btn.rect.x - 40,
-            y=generate_btn.rect.y + generate_btn.height,
-            background_color=pygame.Color(*DARK_BLUE),
-            foreground_color=pygame.Color(*WHITE),
-            font_size=20, outline=False
-        ),
-        Button(
-            surface=None,
-            text="Randomised DFS",
-            x=generate_btn.rect.x - 40,
-            y=generate_btn.rect.y + generate_btn.height,
-            background_color=pygame.Color(*DARK_BLUE),
-            foreground_color=pygame.Color(*WHITE),
-            font_size=20, outline=False
-        ),
-        Button(
-            surface=None,
-            text="Basic Random Maze",
-            x=generate_btn.rect.x - 40,
-            y=generate_btn.rect.y + generate_btn.height * 2,
-            background_color=pygame.Color(*DARK_BLUE),
-            foreground_color=pygame.Color(*WHITE),
-            font_size=20, outline=False
-        ),
-    ]
-)
-
-# Button instance for Clear button
-clear_btn = Button(
-    "Clear Walls", 0, 0,
-    background_color=pygame.Color(*DARK_BLUE),
-    foreground_color=pygame.Color(*WHITE),
-    padding=6, font_size=20, outline=False,
-    surface=None,
-)
-clear_btn.rect.centery = top.centery
-clear_btn.rect.right = WIDTH - 20
-
-# Controls info
-control_btn = Button(
-    "Controls", 0, 0,
-    background_color=pygame.Color(*DARK_BLUE),
-    foreground_color=pygame.Color(*WHITE),
-    padding=6, font_size=20, outline=False,
-    surface=None,
-)
-control_btn.rect.centery = top.centery
-control_btn.rect.right = clear_btn.rect.left - 20
-
-# Level selection button
-level_btn = Button(
-    "Level Select", 0, 0,
-    background_color=pygame.Color(*DARK_BLUE),
-    foreground_color=pygame.Color(*WHITE),
-    padding=6, font_size=20, outline=False,
-    surface=None,
-)
-level_btn.rect.centery = top.centery
-level_btn.rect.left = generate_btn.rect.right + 20
+challenging_map_btn.rect.centery = top.centery
+challenging_map_btn.rect.left = back_btn.rect.right + 20
 
 # Create level manager
 level_manager = LevelManager()
@@ -150,13 +75,8 @@ def initialize(window):
     # Set window as the surface for all UI elements
     title.surface = window
     back_btn.surface = window
-    generate_btn.surface = window
-    level_btn.surface = window
-    for child in generate_menu.children:
-        child.surface = window
-    generate_menu.surface = window
-    clear_btn.surface = window
-    control_btn.surface = window
+    challenging_map_btn.surface = window
+
 
 
 def draw(window, state, maze):
@@ -166,41 +86,10 @@ def draw(window, state, maze):
     pygame.draw.rect(window, DARK_BLUE, top)
     title.draw()
     back_btn.draw()
-
-    # Draw maze legend
-    texts = {
-        "Start Node": WHITE,
-        "Target Node": WHITE,
-        "Wall Node": DARK,
-    }
+    challenging_map_btn.draw()  # Just draw the button, don't handle click here
 
     x = 50
     y = top.bottom + 20
-    for text in texts:
-        # Rectangle (Symbol)
-        pygame.draw.rect(window, texts[text], (x, y, 30, 30))
-        pygame.draw.rect(window, GRAY, (x, y, 30, 30), width=1)
-
-        # Text (Meaning)
-        text_surf = FONT_18.render(text, True, DARK)
-        text_rect = text_surf.get_rect()
-        text_rect.centery = y + 30 // 2
-
-        window.blit(text_surf, (x + 30 + 10, text_rect.y))
-
-        # Formating
-        if text == "Wall Node":
-            y += text_rect.height + 30  # Changed from get_height() to height
-        else:
-            x += 30 + 10 + text_surf.get_width() + 75
-
-        # Draw images for start and target node
-        if text == "Start Node":
-            image_rect = START.get_rect(center=(65, top.bottom + 35))
-            window.blit(START, image_rect)
-        elif text == "Target Node":
-            image_rect = GOAL.get_rect(center=(65, top.bottom + 35))
-            window.blit(GOAL, image_rect)
 
     # Draw level info
     current_level = level_manager.get_current_level()
@@ -225,59 +114,11 @@ def draw(window, state, maze):
     if state.show_controls:
         control_text = FONT_18.render("Use WASD or Arrow Keys to move", True, DARK)
         control_rect = control_text.get_rect()
-        control_rect.center = (WIDTH // 2, top.bottom + 70)
+        control_rect.center = (WIDTH // 2, top.bottom + 50)
         window.blit(control_text, control_rect)
 
     # Draw the maze
     maze.draw()
-
-    # Handle buttons
-    if control_btn.draw():
-        state.show_controls = not state.show_controls
-        state.need_update = True
-
-    if level_btn.draw() and not maze.animator.animating:
-        state.show_level_select = True
-        state.need_update = True
-
-    if clear_btn.draw() and not maze.animator.animating:
-        maze.clear_board()
-        state.done_visualising = False
-        state.need_update = True
-
-    if (generate_menu.draw() or generate_menu.clicked) \
-            and not maze.animator.animating:
-        state.overlay = True
-
-        if generate_menu.selected:
-            maze.clear_board()
-
-            def callback():
-                state.overlay = False
-                state.need_update = True
-                # Update wall positions after generation
-                maze.update_wall_positions()
-
-            maze.generate_maze(
-                algorithm=generate_menu.selected.text,
-                after_generation=callback
-            )
-
-            algorithm = generate_menu.selected.text
-
-            if "Random" in algorithm:
-                new_text = "Generating maze randomly"
-            else:
-                new_text = f"Generating maze using {algorithm}"
-
-            state.label = Label(
-                new_text, "center", 0,
-                background_color=pygame.Color(*WHITE),
-                foreground_color=pygame.Color(*DARK),
-                padding=6, font_size=20, outline=False,
-                surface=window,
-            )
-            state.label.rect.bottom = HEADER_HEIGHT - 10
     
     # Draw level selection menu if active
     if state.show_level_select:
@@ -383,7 +224,7 @@ def load_level(window, state, maze):
         padding=6, font_size=20, outline=False,
         surface=window,
     )
-    state.label.rect.bottom = HEADER_HEIGHT - 10
+    state.label.rect.bottom = HEADER_HEIGHT - 30
 
     # Set time limit
     if current_level["time_limit"] > 0:
@@ -424,7 +265,7 @@ def load_level(window, state, maze):
             padding=6, font_size=20, outline=False,
             surface=window,
         )
-        state.label.rect.bottom = HEADER_HEIGHT - 10
+        state.label.rect.bottom = HEADER_HEIGHT - 30
 
     # Set overlay during maze generation
     state.overlay = True
@@ -444,7 +285,7 @@ def load_level(window, state, maze):
         padding=6, font_size=20, outline=False,
         surface=window,
     )
-    state.label.rect.bottom = HEADER_HEIGHT - 10
+    state.label.rect.bottom = HEADER_HEIGHT - 30
 
     # Ensure we don't hang if callback isn't triggered
     while not state.level_loaded and pygame.time.get_ticks() < level_timeout:
@@ -481,7 +322,7 @@ def run_game_mode(window, state, maze, animator):
         padding=6, font_size=20, outline=False,
         surface=window,
     )
-    state.label.rect.bottom = HEADER_HEIGHT - 10
+    state.label.rect.bottom = HEADER_HEIGHT - 30
     
     # Load the first level
     load_level(window, state, maze)
@@ -512,6 +353,31 @@ def run_game_mode(window, state, maze, animator):
                 if back_btn.rect.collidepoint(mouse_pos):
                     exit_to_menu = True
                     break
+
+                # Handle challenging map button click - improved version
+                if challenging_map_btn.rect.collidepoint(mouse_pos) and not maze.animator.animating:
+                    print("Challenging map button clicked!")
+                    
+                    # Generate the challenging map immediately
+                    def callback():
+                        # Make sure we reset all relevant state flags
+                        state.overlay = False
+                        state.need_update = True
+                        # Update wall positions after generation
+                        maze.update_wall_positions()
+                        
+                        # Show a brief confirmation message
+                        state.label = Label(
+                            "Challenging map generated!", "center", 0,
+                            background_color=pygame.Color(*WHITE),
+                            foreground_color=pygame.Color(*DARK),
+                            padding=6, font_size=20, outline=False,
+                            surface=window,
+                        )
+                        state.label.rect.bottom = HEADER_HEIGHT - 30
+                    
+                    # Generate the map
+                    maze.generate_challenging_map(after_generation=callback)
         
         # Update timer if level has time limit
         current_level = level_manager.get_current_level()
@@ -530,7 +396,7 @@ def run_game_mode(window, state, maze, animator):
                     padding=6, font_size=20, outline=False,
                     surface=window,
                 )
-                state.label.rect.bottom = HEADER_HEIGHT - 10
+                state.label.rect.bottom = HEADER_HEIGHT - 30
                 state.need_update = True
                 
                 # Wait for key press to restart level
@@ -618,7 +484,7 @@ def run_game_mode(window, state, maze, animator):
                             padding=6, font_size=20, outline=False,
                             surface=window,
                         )
-                        state.label.rect.bottom = HEADER_HEIGHT - 10
+                        state.label.rect.bottom = HEADER_HEIGHT - 30
                         state.need_update = True
                     
                         # Show unlock message if next level exists
@@ -650,7 +516,7 @@ def run_game_mode(window, state, maze, animator):
                                             padding=6, font_size=20, outline=False,
                                             surface=window,
                                         )
-                                        state.label.rect.bottom = HEADER_HEIGHT - 10
+                                        state.label.rect.bottom = HEADER_HEIGHT - 30
                                     next_level = True
                                 
                             if not next_level:
