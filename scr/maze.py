@@ -692,13 +692,19 @@ class Maze:
         # Generate a base maze using Randomised DFS to ensure a path exists
         self.generator.randomised_dfs()
 
+        # Remember the current start and goal before adding obstacles
+        current_start = self.start
+        current_goal = self.goal
+
         # Add dead ends and extra paths
         for _ in range(random.randint(5, 15)):  # Randomly add 5 to 15 dead ends
             row = random.randint(1, self.height - 2)
             col = random.randint(1, self.width - 2)
 
             if self.maze[row][col].value == "1":  # Only add walls to empty cells
-                self.set_cell((row, col), "#")
+                # Kiểm tra xem đây không phải là start hoặc goal
+                if (row, col) != current_start and (row, col) != current_goal:
+                    self.set_cell((row, col), "#")
 
         for _ in range(random.randint(3, 10)):  # Randomly add 3 to 10 extra paths
             row = random.randint(1, self.height - 2)
@@ -707,16 +713,23 @@ class Maze:
             if self.maze[row][col].value == "#":  # Only add paths to wall cells
                 self.set_cell((row, col), "1")
 
-        # Ensure start and goal positions are valid
-        self.set_cell(self.start, "A", forced=True)
-        self.set_cell(self.goal, "B", forced=True)
+        # Đảm bảo start và goal được đặt lại đúng
+        self.set_cell(current_start, "A", forced=True)
+        self.set_cell(current_goal, "B", forced=True)
+        
+        # Đảm bảo thuộc tính start và goal được cập nhật chính xác
+        self.start = current_start
+        self.goal = current_goal
 
         # Validate that a path exists from start to goal
         solution = self.solve("Breadth First Search")
         if not solution.path:
-            print("No path found, regenerating challenging map...")
+            print("No path found in challenging map, regenerating...")
             self.generate_challenging_map(after_generation)
             return
+
+        # Thêm log để xác nhận có đường đi
+        print(f"Valid path found in challenging map: {len(solution.path)} steps")
 
         # Update wall positions
         self.update_wall_positions()
