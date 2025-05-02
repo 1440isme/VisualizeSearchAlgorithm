@@ -40,7 +40,7 @@ class IterativeDeepeningSearch:
         if depth <= 0:
             return None
 
-        for action, neighbor in grid.get_neighbours(current).items():
+        for action, neighbor in grid.get_neighbors(current).items():
             if neighbor not in visited:
                 node = grid.get_node(pos=neighbor)
                 node.parent = grid.get_node(pos=current)

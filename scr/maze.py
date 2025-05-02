@@ -37,16 +37,8 @@ from .constants import (
 # ================ Thiết kế lớp MazeNode ================
 """Kế thừa từ lớp Node, dùng để biểu diễn một ô trong mê cung"""
 class MazeNode(Node):
-    def __init__(
-        self, 
-        value: str,
-        state: tuple[int, int],
-        cost: int, 
-        parent: Node | None = None, 
-        action: str | None = None,
-        color: tuple[int, int, int] = WHITE
-    ) -> None:
-        super().__init__(value, state, cost, parent, action) # gọi hàm khởi tạo của lớp cha 
+    def __init__(self, value: str, state: tuple[int, int], cost: int, parent: Node | None = None, action: str | None = None, color: tuple[int, int, int] = WHITE) -> None:
+        super().__init__(value, state, cost, parent, action)
         self.color = color
 
 
@@ -64,58 +56,47 @@ Các chức năng sẽ của class:
 class Maze:
     def __init__(self, surface: pygame.surface.Surface) -> None:
         self.surface = surface
-        self.animator: Animator
-        self.generator: MazeGenerator
 
         self.width = MAZE_WIDTH // CELL_SIZE
         self.height = MAZE_HEIGHT // CELL_SIZE
 
-        self.maze = [[MazeNode("1", (rowIdx, colIdx), 1)
-                      for colIdx in range(self.width)]
-                     for rowIdx in range(self.height)]
-        
-        # Ví trị bắt đầu của mũi tên và kết thúc của tâm 
-        start_col = self.width // 4 # Bên mép trái
-        goal_col = self.width - self.width // 4 - 1  # Bên mép phải 
-        if start_col > goal_col: # điều kiện ở đây để tránh bug logic
+        self.maze = [[MazeNode("1", (rowIdx, colIdx), 1) for colIdx in range(self.width)] for rowIdx in range(self.height)]
+
+        start_col = self.width // 4
+        goal_col = self.width - self.width // 4 - 1
+        if start_col > goal_col:
             start_col, goal_col = goal_col, start_col
 
-        # Đảm bảo lun đặt ở giữa mê cung
         self.start = (self.height // 2, start_col)
         self.goal = (self.height // 2, goal_col)
 
-        self.maze[self.start[0]][self.start[1]].value = "A" # gán cho điểm bắt đầu là A
+        self.maze[self.start[0]][self.start[1]].value = "A"
         self.maze[self.start[0]][self.start[1]].cost = 0
         self.maze[self.goal[0]][self.goal[1]].value = "B"
         self.maze[self.goal[0]][self.goal[1]].cost = 1
 
-        # Tạo tọa độ màn hình cho mê cung
         self.coords = self._generate_coordinates()
 
-        # Tốc độ
+        self.animator = Animator(self.surface, self)
+        self.generator = MazeGenerator(self.animator)
+
+
         self.speed = "Fast"
+        
+
+        self.wall_positions = []
 
     def _generate_coordinates(self) -> list[list[tuple[int, int]]]:
-        """ Hàm này tính tọa độ pixel
-         Returns: 
-            list[list[tuple[int, int]]]: ma trận tọa độ
-        """
-
-        coords: list[list[tuple[int, int]]] = []
-
-        # Tạo tọa độ cho từng ô trong mê cung
+        coords = []
         for i in range(self.height):
             row = []
             for j in range(self.width):
-                # Tính tọa độ cho góc bên trái của ô 
-                x = j * CELL_SIZE + (REMAINDER_W // 2) # Di chuyển sang phải j ô
-                y = i * CELL_SIZE + (HEADER_HEIGHT) # Di chuyển xún i ô
-                
+                x = j * CELL_SIZE + (REMAINDER_W // 2)
+                y = i * CELL_SIZE + HEADER_HEIGHT
                 row.append((x, y))
-
             coords.append(row)
-
         return coords
+
 
     def get_cell_value (self, pos: tuple[int, int]) -> str:
         """ Lấy giá trị của ô
@@ -168,9 +149,15 @@ class Maze:
             case "*": # nằm trong đường đi ngắn nhất; Hiện thị animation
                 cost = self.maze[pos[0]][pos[1]].cost
                 color = YELLOW
+            
             case _: # mặc định; cho phép tạo mê cung có trọng số
-                cost = int(value)
-                color = WHITE
+                try:
+                    cost = int(value)
+                    color = WHITE
+                except ValueError:
+                    # Fallback for any other non-integer values
+                    cost = 1
+                    color = WHITE
 
         self.maze[pos[0]][pos[1]].value = value
         self.maze[pos[0]][pos[1]].cost = cost
@@ -293,10 +280,21 @@ class Maze:
                 self.generator.basic_weight_maze()
             case "Basic Random Maze":
                 self.generator.basic_random_maze()
+                
         # xử lí animation sau khi sinh mê cung xong
-        # Lấy animation cuối trong toàn bộ các node cần animate -> gán cho một callback after_generation để thực hiện hành động khi animation kết thúc
-        list(self.animator.nodes_to_animate.values())[-1][-1].after_animation = after_generation
-
+        # Đảm bảo callback after_generation luôn được gọi
+        if self.animator.nodes_to_animate:
+            # Nếu có animation, gán callback cho animation cuối cùng
+            try:
+                list(self.animator.nodes_to_animate.values())[-1][-1].after_animation = after_generation
+            except (IndexError, KeyError):
+                # Nếu có lỗi khi truy cập animation cuối cùng, gọi callback ngay lập tức
+                if after_generation:
+                    after_generation()
+        else:
+            # Nếu không có animation, gọi callback ngay lập tức
+            if after_generation:
+                after_generation()
 
     def _draw_walls_around(self) -> None:
         """Vẽ tường xung quanh mê cung"""
@@ -371,6 +369,10 @@ class Maze:
             "Greedy Best First Search": Search.GREEDY_BEST_FIRST_SEARCH,
             "Breadth First Search": Search.BREADTH_FIRST_SEARCH,
             "Depth First Search": Search.DEPTH_FIRST_SEARCH,
+            "Uniform Cost Search": Search.UNIFORM_COST_SEARCH,
+            "Iterative Deepening DFS": Search.ITERATIVE_DEEPENING_SEARCH,
+            "Iterative Deepening A*": Search.IDA_STAR_SEARCH,
+            "Beam Search": Search.BEAM_SEARCH,
         }
 
         # khởi tạo grid
@@ -490,6 +492,8 @@ class Maze:
                 width=1
             )
 
+        
+
         # Vẽ icon nếu là ô có cost > 1
         if (n := self.maze[row][col]).cost > 1:
             image_rect = WEIGHT.get_rect(
@@ -513,6 +517,7 @@ class Maze:
             image_rect = GOAL.get_rect(
                 center=(x + CELL_SIZE // 2, y + CELL_SIZE // 2))
             self.surface.blit(GOAL, image_rect)
+
     def is_valid_move(self, pos: tuple[int, int]) -> bool:
         """Check if the new position is a valid move for the player.
 
@@ -540,6 +545,7 @@ class Maze:
             current_pos (tuple[int, int]): The current position of the player.
             new_pos (tuple[int, int]): The new position to move the player to.
         """
+        
         # Update the maze: set the current position to an empty cell
         self.set_cell(current_pos, "1", forced=True)
 
@@ -548,3 +554,186 @@ class Maze:
 
         # Update the start position
         self.start = new_pos
+
+    def reset_player_position(self) -> None:
+        """Reset the player's position to the original start position"""
+        # Get the current start position (which may have been moved during play)
+        current_pos = self.start
+        
+        # Get back to the original position (1/4 of maze width, at the middle height)
+        start_col = self.width // 4
+        original_pos = (self.height // 2, start_col)
+        
+        # Only reset if the position actually changed
+        if current_pos != original_pos:
+            # Clear the current start cell
+            self.set_cell(current_pos, "1", forced=True)
+            
+            # Set the original position as the new start
+            self.set_cell(original_pos, "A", forced=True)
+            
+            # Update the start position
+            self.start = original_pos
+
+    
+    def update_wall_positions(self):
+        """Update the list of wall positions after maze generation"""
+        self.wall_positions = []
+        for i in range(self.height):
+            for j in range(self.width):
+                if self.maze[i][j].value == "#":
+                    self.wall_positions.append((i, j))
+
+    def create_standard_maze(self, algorithm: str, after_generation: Optional[GenerationCallback] = None) -> None:
+        """
+        Phương thức chuẩn để tạo mê cung, được sử dụng bởi cả visualize_mode và game_mode
+        để đảm bảo mê cung được tạo theo cùng một cách.
+        
+        Args:
+            algorithm (str): Thuật toán tạo mê cung
+            after_generation (Optional[GenerationCallback], optional): Callback sau khi tạo
+        """
+        # Xóa mê cung cũ
+        self.clear_board()
+        
+        # Generate the maze with the specified algorithm
+        self.generate_maze(algorithm=algorithm, after_generation=after_generation)
+        
+        # Đảm bảo start và goal luôn được thiết lập đúng
+        # Đây là điều duy nhất chúng ta làm sau khi tạo mê cung
+        self.set_cell(self.start, "A", forced=True)
+        self.set_cell(self.goal, "B", forced=True)
+
+    def randomize_goal_position(self) -> None:
+        """Ngẫu nhiên hóa vị trí điểm đích để tăng độ thử thách
+        
+        Method này chọn một vị trí ngẫu nhiên cho điểm đích khác vị trí ban đầu
+        và các vị trí tường.
+        """
+        import random
+        
+        # Lưu vị trí đích hiện tại
+        current_goal = self.goal
+        
+        # Lấy danh sách các vị trí không phải tường và không phải điểm bắt đầu
+        valid_positions = []
+        for i in range(self.height):
+            for j in range(self.width):
+                if self.maze[i][j].value != "#" and (i, j) != self.start and (i, j) != current_goal:
+                    valid_positions.append((i, j))
+        
+        # Nếu không có vị trí hợp lệ, giữ nguyên vị trí đích
+        if not valid_positions:
+            return
+        
+        # Ưu tiên các vị trí bên phải mê cung để tránh đích quá gần điểm bắt đầu
+        right_positions = [pos for pos in valid_positions if pos[1] > self.width // 2]
+        
+        # Nếu có vị trí bên phải, chọn ngẫu nhiên từ đó, ngược lại chọn từ tất cả vị trí hợp lệ
+        new_goal = random.choice(right_positions if right_positions else valid_positions)
+        
+        # Cập nhật điểm đích
+        self.set_cell(current_goal, "1", forced=True)  # Chuyển vị trí cũ thành đường đi
+        self.set_cell(new_goal, "B", forced=True)      # Thiết lập vị trí mới là đích
+        self.goal = new_goal                          # Cập nhật biến goal
+
+    def resize(self, width: int, height: int) -> None:
+        """Resize the maze to the specified dimensions
+        
+        Args:
+            width (int): The new width
+            height (int): The new height
+        """
+        # Store the old dimensions
+        old_width = self.width
+        old_height = self.height
+        
+        # Update dimensions
+        self.width = width
+        self.height = height
+        
+        # Create a new maze with the new dimensions
+        self.maze = [[MazeNode("1", (rowIdx, colIdx), 1)
+                      for colIdx in range(self.width)]
+                     for rowIdx in range(self.height)]
+        
+        # Recalculate start and goal positions with the new dimensions
+        start_col = self.width // 4
+        goal_col = self.width - self.width // 4 - 1
+        
+        self.start = (self.height // 2, start_col)
+        self.goal = (self.height // 2, goal_col)
+        
+        # Set start and goal cells
+        self.set_cell(self.start, "A", forced=True)
+        self.set_cell(self.goal, "B", forced=True)
+        
+        # Regenerate screen coordinates
+        self.coords = self._generate_coordinates()
+        
+        
+
+        self.wall_positions = []
+        
+        # Important: Reinitialize the generator with the new dimensions
+        if hasattr(self, 'generator'):
+            # Store the animator first
+            animator = self.animator
+            # Reinitialize the generator
+            self.generator = MazeGenerator(animator)
+
+    def generate_challenging_map(self, after_generation: Optional[GenerationCallback] = None) -> None:
+        """Generate a challenging map with multiple paths and dead ends, ensuring a path to the goal exists."""
+        import random
+
+        # Clear the board first
+        self.clear_board()
+
+        # Generate a base maze using Randomised DFS to ensure a path exists
+        self.generator.randomised_dfs()
+
+        # Remember the current start and goal before adding obstacles
+        current_start = self.start
+        current_goal = self.goal
+
+        # Add dead ends and extra paths
+        for _ in range(random.randint(5, 15)):  # Randomly add 5 to 15 dead ends
+            row = random.randint(1, self.height - 2)
+            col = random.randint(1, self.width - 2)
+
+            if self.maze[row][col].value == "1":  # Only add walls to empty cells
+                # Kiểm tra xem đây không phải là start hoặc goal
+                if (row, col) != current_start and (row, col) != current_goal:
+                    self.set_cell((row, col), "#")
+
+        for _ in range(random.randint(3, 10)):  # Randomly add 3 to 10 extra paths
+            row = random.randint(1, self.height - 2)
+            col = random.randint(1, self.width - 2)
+
+            if self.maze[row][col].value == "#":  # Only add paths to wall cells
+                self.set_cell((row, col), "1")
+
+        # Đảm bảo start và goal được đặt lại đúng
+        self.set_cell(current_start, "A", forced=True)
+        self.set_cell(current_goal, "B", forced=True)
+        
+        # Đảm bảo thuộc tính start và goal được cập nhật chính xác
+        self.start = current_start
+        self.goal = current_goal
+
+        # Validate that a path exists from start to goal
+        solution = self.solve("Breadth First Search")
+        if not solution.path:
+            print("No path found in challenging map, regenerating...")
+            self.generate_challenging_map(after_generation)
+            return
+
+        # Thêm log để xác nhận có đường đi
+        print(f"Valid path found in challenging map: {len(solution.path)} steps")
+
+        # Update wall positions
+        self.update_wall_positions()
+
+        # Call the after_generation callback if provided
+        if after_generation:
+            after_generation()

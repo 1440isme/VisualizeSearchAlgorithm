@@ -6,9 +6,12 @@ from .search.gbfs import GreedyBestFirstSearch
 from .search.bfs import BreadthFirstSearch
 from .search.dfs import DepthFirstSearch
 from .search.dijkstras import DijkstrasSearch
+from .search.ucs import UCS
+from .search.iddfs import IterativeDeepeningSearch
+from .search.idastar import IDAStarSearch
+from .search.beam import BeamSearch
 from .models.grid import Grid
 from .models.solution import Solution
-from .models.search_types import Search
 from .models.search_types import Search
 
 SearchFunction = Callable[[Grid], Solution]
@@ -19,6 +22,10 @@ SEARCH: dict[Search, SearchFunction] = {
     Search.BREADTH_FIRST_SEARCH: BreadthFirstSearch.search,
     Search.GREEDY_BEST_FIRST_SEARCH: GreedyBestFirstSearch.search,
     Search.DEPTH_FIRST_SEARCH: DepthFirstSearch.search,
+    Search.UNIFORM_COST_SEARCH: UCS.search,
+    Search.ITERATIVE_DEEPENING_SEARCH: IterativeDeepeningSearch.search,
+    Search.IDA_STAR_SEARCH: IDAStarSearch.search,
+    Search.BEAM_SEARCH: BeamSearch.search,
 }
 
 

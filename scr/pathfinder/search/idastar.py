@@ -3,7 +3,7 @@ from ..models.solution import NoSolution, Solution
 from ..models.node import Node
 import heapq
 
-class IterativeDeepeningAStar:
+class IDAStarSearch:
     @staticmethod
     def search(grid: Grid) -> Solution:
         """
@@ -18,7 +18,7 @@ class IterativeDeepeningAStar:
         explored_total = set()
 
         while True:
-            temp, result, visited = IterativeDeepeningAStar._ida_star(grid, start, goal, 0, threshold, [], set(), heuristic, parent=None)
+            temp, result, visited = IDAStarSearch._ida_star(grid, start, goal, 0, threshold, [], set(), heuristic, parent=None)
             explored_total.update(visited)
 
             if isinstance(result, Solution):
@@ -43,14 +43,14 @@ class IterativeDeepeningAStar:
             return f, Solution(full_path, visited, path_cost=len(full_path)-1), visited
 
         min_cost = float('inf')
-        for action, neighbor in grid.get_neighbours(current).items():
+        for action, neighbor in grid.get_neighbors(current).items():
             if neighbor not in visited:
                 node = grid.get_node(pos=neighbor)
                 node.parent = grid.get_node(pos=current) if parent is None else parent
                 node.action = action
                 path.append(node)
 
-                temp, result, visited = IterativeDeepeningAStar._ida_star(
+                temp, result, visited = IDAStarSearch._ida_star(
                     grid, neighbor, goal, g + grid.get_cost(neighbor), threshold, path, visited, heuristic, node
                 )
                 if isinstance(result, Solution):

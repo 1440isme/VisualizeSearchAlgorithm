@@ -48,7 +48,7 @@ class Button(Widget):
         surface: pygame.surface.Surface | None = None
     ) -> None:
         if surface:
-            self.screen = surface
+            self.surface = surface  # Changed from self.screen to self.surface
         self.text = text
         self.padding = padding
         self.outline = outline # có vẽ viền không ?
@@ -82,7 +82,7 @@ class Button(Widget):
         self.text_rect.topleft = self.rect.x + padding, self.rect.y + padding
 
     def set_surface(self, surf: pygame.surface.Surface) -> None:
-        self.screen = surf
+        self.surface = surf  # Changed from self.screen to self.surface
 
     def draw(self):
         """ Vẽ nút (các label)
@@ -96,13 +96,13 @@ class Button(Widget):
         action = self.rect.collidepoint(pos) and pygame.mouse.get_pressed()[0] # kiểm tra click
         
         # Vẽ nút
-        pygame.draw.rect(self.screen, self.background_color, self.rect)
+        pygame.draw.rect(self.surface, self.background_color, self.rect)  # Changed from self.screen to self.surface
 
         if self.outline:
-            pygame.draw.rect(self.screen, BLACK, self.rect, width=self.outline)
+            pygame.draw.rect(self.surface, BLACK, self.rect, width=self.outline)  # Changed from self.screen to self.surface
 
         text_x, text_y = self.rect.x + self.padding, self.rect.y + self.padding
-        self.screen.blit(self.text_surf, (text_x, text_y))
+        self.surface.blit(self.text_surf, (text_x, text_y))  # Changed from self.screen to self.surface
 
         return action
     
@@ -119,15 +119,15 @@ class Label(Button):
     
         """
         # Vẽ hình chữ nhật đại diện cho label
-        pygame.draw.rect(self.screen, self.background_color,self.rect)
+        pygame.draw.rect(self.surface, self.background_color, self.rect)
 
         # Vẽ viền
         if self.outline:
-            pygame.draw.rect(self.screen, BLACK, self.rect, width=self.outline)
+            pygame.draw.rect(self.surface, BLACK, self.rect, width=self.outline)
 
         # Render văn bản
         text_x, text_y = self.rect.x + self.padding, self.rect.y + self.padding
-        self.screen.blit(self.text_surf, (text_x, text_y))
+        self.surface.blit(self.text_surf, (text_x, text_y))
 
 # ================ Thiết kế các Menu ================
 """
@@ -141,11 +141,12 @@ class Menu(Widget):
         button: Button,
         children: list[Widget]
     )-> None:
-        self.screen = surface
+        self.surface = surface  # Changed from self.screen to self.surface
         self.button = button
         self.children = children
         self.clicked = False # trạng thái của menu (đang mở hay ko)
         self.selected: Widget | None = None # lưu lại Widget được chọn từ menu (nếu có)
+        self.custom_button = None  # Sẽ lưu trữ reference đến CustomButton nếu được dùng
 
         self.height = sum(child.rect.height for child in children) # lấy tổng chiều cao của các mục
         self.width = max(child.rect.width for child in children) # lấy chiều rộng của thằng to nhất
@@ -174,7 +175,7 @@ class Menu(Widget):
                                     self.height + 20)
         
     def set_surface(self, surf: pygame.surface.Surface) -> None:
-        self.screen = surf
+        self.surface = surf  # Changed from self.screen to self.surface
         self.button.set_surface(surf)
 
     def draw(self) -> bool:
@@ -186,12 +187,23 @@ class Menu(Widget):
         Returns: 
             bool: Khi bất kì button trong menu đc nhấn
         """
-
-        clicked = self.button.draw()
+        # Kiểm tra xem nút có được tham chiếu từ CustomButton không
+        # Nếu không, gọi draw thông thường của Button
+        clicked = False
+        if hasattr(self, 'custom_button') and self.custom_button:
+            # Chỉ kiểm tra click mà không vẽ, vì đã được vẽ trong visualize_mode.py
+            mouse_pos = pygame.mouse.get_pos()
+            clicked = (self.button.rect.collidepoint(mouse_pos) and 
+                     pygame.mouse.get_pressed()[0])
+        else:
+            clicked = self.button.draw()
+            
         self.selected = None
 
         if clicked:
-            self.clicked = True
+            # Toggle the dropdown state when button is clicked
+            self.clicked = not self.clicked
+            return False
 
         if not self.clicked:
             return False
@@ -199,7 +211,7 @@ class Menu(Widget):
         # Xử lí nút khi đc nhấn hoặc ko
         action = False
         pygame.draw.rect(
-            self.screen,
+            self.surface,
             DARK_BLUE,
             self.popup_rect,
             border_radius= 10
