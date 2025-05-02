@@ -159,11 +159,24 @@ def main() -> None:
     """Start here"""
     # Initialize
     state = State()
-    maze = Maze(surface=WINDOW)
-    animator = Animator(surface=WINDOW, maze=maze)
-    maze_generator = MazeGenerator(animator=animator)
-    maze.animator = animator
-    maze.generator = maze_generator
+    
+    # Tạo maze riêng cho từng chế độ
+    game_maze = Maze(surface=WINDOW)
+    visual_maze = Maze(surface=WINDOW)
+    
+    # Tạo animator và generator cho mỗi maze
+    game_animator = Animator(surface=WINDOW, maze=game_maze)
+    visual_animator = Animator(surface=WINDOW, maze=visual_maze)
+    
+    game_generator = MazeGenerator(animator=game_animator)
+    visual_generator = MazeGenerator(animator=visual_animator)
+    
+    # Thiết lập các tham chiếu cho mỗi maze
+    game_maze.animator = game_animator
+    game_maze.generator = game_generator
+    
+    visual_maze.animator = visual_animator
+    visual_maze.generator = visual_generator
     
     # Start in menu mode
     current_mode = "menu"
@@ -193,13 +206,13 @@ def main() -> None:
                         current_mode = "game"
         
         elif current_mode == "visualize":
-            # Run visualization mode
-            result = run_visualize_mode(WINDOW, state, maze, animator)
+            # Run visualization mode with its own maze
+            result = run_visualize_mode(WINDOW, state, visual_maze, visual_animator)
             current_mode = result if result else "menu"
             
         elif current_mode == "game":
-            # Run game mode
-            result = run_game_mode(WINDOW, state, maze, animator)
+            # Run game mode with its own maze
+            result = run_game_mode(WINDOW, state, game_maze, game_animator)
             current_mode = result if result else "menu"
         
         # Update

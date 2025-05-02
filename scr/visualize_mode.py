@@ -674,6 +674,7 @@ def show_legends_popup(window, state) -> None:
 def run_visualize_mode(window, state, maze, animator):
     """Run the visualization mode loop với giao diện mới"""
     # Khởi tạo UI mới với các nút bo tròn đẹp mắt
+    maze.clear_board()
     initialize(window)
 
     # Thiết lập trạng thái ban đầu

@@ -29,7 +29,7 @@ from .constants import (
     YELLOW,
     START,
     GOAL,
-    CELL_SIZE,  # Import CELL_SIZE
+    
 )
 
 # Top bar
@@ -136,6 +136,18 @@ def draw(window, state, maze):
     
     # Draw the solution path if it exists AND we're not generating a new map
     if hasattr(state, 'solution_path') and state.showing_solution and state.solution_path and not state.overlay:
+        # Lọc ra các tọa độ hợp lệ từ solution_path
+        valid_path = []
+        for cell in state.solution_path:
+            # Kiểm tra xem cell có nằm trong kích thước mê cung không
+            if 0 <= cell[0] < maze.height and 0 <= cell[1] < maze.width:
+                valid_path.append(cell)
+            else:
+                print(f"Warning: Invalid cell in solution path: {cell}")
+        
+        # Cập nhật solution_path với chỉ các tọa độ hợp lệ
+        state.solution_path = valid_path
+        
         # Vẽ đường đi theo cách của visualize mode
         for cell in state.solution_path:
             # Skip drawing on START/GOAL
@@ -147,6 +159,29 @@ def draw(window, state, maze):
         # Đảm bảo START và GOAL được vẽ đúng
         maze.set_cell(maze.start, "A", forced=True)
         maze.set_cell(maze.goal, "B", forced=True)
+    
+    # Xoay và vẽ hình ảnh START theo hướng hiện tại
+    from .constants import START, CELL_SIZE
+    
+    # Lấy vị trí hiện tại của người chơi (START)
+    start_row, start_col = maze.start
+    start_x, start_y = maze.coords[start_row][start_col]
+    
+    # Vẽ một hình chữ nhật màu nền lên ô START trước khi vẽ hình tam giác
+    start_row, start_col = maze.start
+    start_x, start_y = maze.coords[start_row][start_col]
+
+    # Vẽ một hình chữ nhật với màu nền tương tự ô trống để "xóa" hình ảnh gốc
+    # Lấy màu nền từ cell trắng
+    pygame.draw.rect(window, WHITE, (start_x, start_y, CELL_SIZE, CELL_SIZE))
+
+    # Vẽ đường viền của ô (nếu cần)
+    pygame.draw.rect(window, DARK, (start_x, start_y, CELL_SIZE, CELL_SIZE), 1)
+
+    # Sau đó vẽ hình ảnh đã xoay
+    rotated_start = pygame.transform.rotate(START, state.player_direction)
+    rect = rotated_start.get_rect(center=(start_x + CELL_SIZE//2, start_y + CELL_SIZE//2))
+    window.blit(rotated_start, rect)
     
     # Draw level selection menu if active
     if state.show_level_select:
@@ -280,6 +315,11 @@ def load_level(window, state, maze):
 
     # Define callback after maze generation
     def after_generation():
+        # Reset solution path
+        if hasattr(state, 'solution_path'):
+            state.solution_path = []
+            state.showing_solution = False
+
         # Mark level as loaded
         state.level_loaded = True
         state.overlay = False
@@ -349,6 +389,7 @@ def run_game_mode(window, state, maze, animator):
     state.need_update = True
     state.show_controls = True  # Initially show controls
     state.show_level_select = False  # Level selection screen is initially hidden
+    state.game_completed = False  # Add this flag
     state.label = Label(
         "Player Mode: Use WASD or Arrow Keys to move", "center", 0,
         background_color=pygame.Color(*WHITE),
@@ -357,6 +398,9 @@ def run_game_mode(window, state, maze, animator):
         surface=window,
     )
     state.label.rect.bottom = HEADER_HEIGHT - 30
+    
+    # Thêm hướng di chuyển ban đầu (0 = phải, 90 = lên, 180 = trái, 270 = xuống)
+    state.player_direction = 0  # Mặc định hướng sang phải
     
     # Load the first level
     load_level(window, state, maze)
@@ -374,6 +418,52 @@ def run_game_mode(window, state, maze, animator):
     # Main loop
     while not exit_to_menu:
         current_time = pygame.time.get_ticks()
+        
+        # Update timer if level has time limit - Di chuyển ra ngoài phần xử lý di chuyển
+        current_level = level_manager.get_current_level()
+        if hasattr(state, 'time_remaining') and state.time_remaining is not None:
+            elapsed = (current_time - state.level_start_time) / 1000  # Convert to seconds
+            state.time_remaining = current_level["time_limit"] - elapsed
+            state.need_update = True  # Thêm dòng này để cập nhật hiển thị liên tục
+            
+            # Check for time out
+            if state.time_remaining <= 0:
+                state.time_remaining = 0
+                # Show game over message
+                state.label = Label(
+                    "Time's up! Press any key to try again.", "center", 0,
+                    background_color=pygame.Color(*WHITE),
+                    foreground_color=pygame.Color(*DARK),
+                    padding=6, font_size=20, outline=False,
+                    surface=window,
+                )
+                state.label.rect.bottom = HEADER_HEIGHT - 30
+                state.need_update = True
+                
+                # Wait for key press to restart level
+                restart_level = False
+                while not restart_level and not exit_to_menu:
+                    for event in pygame.event.get():
+                        if event.type == pygame.QUIT:
+                            pygame.quit()
+                            return None
+                        if event.type == pygame.KEYDOWN:
+                            # Reload the current level
+                            load_level(window, state, maze)
+                            restart_level = True
+                        
+                        if event.type == pygame.MOUSEBUTTONDOWN:
+                            mouse_pos = pygame.mouse.get_pos()
+                            if back_btn.rect.collidepoint(mouse_pos):
+                                exit_to_menu = True
+                                restart_level = True
+                                break
+                    
+                    # Keep updating display while waiting for restart
+                    if not restart_level:
+                        draw(window, state, maze)
+                        pygame.display.update()
+                        CLOCK.tick(FPS)
         
         # Handle events
         for event in pygame.event.get():
@@ -401,6 +491,12 @@ def run_game_mode(window, state, maze, animator):
                         if hasattr(state, 'solution_path'):
                             state.solution_path = []
                             state.showing_solution = False
+                        
+                        # Reset thời gian của level nếu level có giới hạn thời gian
+                        current_level = level_manager.get_current_level()
+                        if current_level["time_limit"] > 0:
+                            state.time_remaining = current_level["time_limit"]
+                            state.level_start_time = pygame.time.get_ticks()
                         
                         # Make sure we reset all relevant state flags
                         state.overlay = False
@@ -461,51 +557,6 @@ def run_game_mode(window, state, maze, animator):
                     draw(window, state, maze)
                     pygame.display.update()
         
-        # Update timer if level has time limit
-        current_level = level_manager.get_current_level()
-        if hasattr(state, 'time_remaining') and state.time_remaining is not None:
-            elapsed = (current_time - state.level_start_time) / 1000  # Convert to seconds
-            state.time_remaining = current_level["time_limit"] - elapsed
-            
-            # Check for time out
-            if state.time_remaining <= 0:
-                state.time_remaining = 0
-                # Show game over message
-                state.label = Label(
-                    "Time's up! Press any key to try again.", "center", 0,
-                    background_color=pygame.Color(*WHITE),
-                    foreground_color=pygame.Color(*DARK),
-                    padding=6, font_size=20, outline=False,
-                    surface=window,
-                )
-                state.label.rect.bottom = HEADER_HEIGHT - 30
-                state.need_update = True
-                
-                # Wait for key press to restart level
-                restart_level = False
-                while not restart_level and not exit_to_menu:
-                    for event in pygame.event.get():
-                        if event.type == pygame.QUIT:
-                            pygame.quit()
-                            return None
-                        if event.type == pygame.KEYDOWN:
-                            # Reload the current level
-                            load_level(window, state, maze)
-                            restart_level = True
-                        
-                        if event.type == pygame.MOUSEBUTTONDOWN:
-                            mouse_pos = pygame.mouse.get_pos()
-                            if back_btn.rect.collidepoint(mouse_pos):
-                                exit_to_menu = True
-                                restart_level = True
-                                break
-                    
-                    # Keep updating display while waiting for restart
-                    if not restart_level:
-                        draw(window, state, maze)
-                        pygame.display.update()
-                        CLOCK.tick(FPS)
-        
         # Check if we should exit to menu
         if exit_to_menu:
             break
@@ -516,7 +567,7 @@ def run_game_mode(window, state, maze, animator):
             state.need_update = False
         
         # Handle player movement with delay to control speed
-        if current_time - last_move_time >= move_delay:
+        if current_time - last_move_time >= move_delay and not getattr(state, 'game_completed', False):
             keys = pygame.key.get_pressed()
             current_pos = maze.start  # Current player position is the start point
             new_pos = list(current_pos)
@@ -525,15 +576,19 @@ def run_game_mode(window, state, maze, animator):
             # Move with WASD or arrow keys
             if keys[pygame.K_w] or keys[pygame.K_UP]:
                 new_pos[0] -= 1  # Up
+                state.player_direction = 90  # Hướng lên
                 moved = True
             elif keys[pygame.K_s] or keys[pygame.K_DOWN]:
                 new_pos[0] += 1  # Down
+                state.player_direction = 270  # Hướng xuống
                 moved = True
             elif keys[pygame.K_a] or keys[pygame.K_LEFT]:
                 new_pos[1] -= 1  # Left
+                state.player_direction = 180  # Hướng trái
                 moved = True
             elif keys[pygame.K_d] or keys[pygame.K_RIGHT]:
                 new_pos[1] += 1  # Right
+                state.player_direction = 0  # Hướng phải
                 moved = True
 
             # If a move key was pressed
@@ -601,6 +656,10 @@ def run_game_mode(window, state, maze, animator):
                                         level_manager.set_current_level(current_level["id"] + 1)
                                         load_level(window, state, maze)
                                     else:
+                                        # Đặt cờ để khóa di chuyển
+                                        state.game_completed = True
+                                        
+                                        # Hiển thị thông báo chúc mừng
                                         state.label = Label(
                                             "Congratulations! You completed all levels!", "center", 0,
                                             background_color=pygame.Color(*WHITE),
@@ -609,6 +668,38 @@ def run_game_mode(window, state, maze, animator):
                                             surface=window,
                                         )
                                         state.label.rect.bottom = HEADER_HEIGHT - 30
+                                        
+                                        # Thêm hướng dẫn quay lại level 1
+                                        restart_text = FONT_BOLD_20.render("Press SPACE to restart from Level 1", True, BLUE)
+                                        restart_rect = restart_text.get_rect(center=(WIDTH // 2, HEIGHT // 2))
+                                        window.blit(restart_text, restart_rect)
+                                        pygame.display.update()
+                                        
+                                        # Chờ người chơi nhấn SPACE để quay lại level 1
+                                        waiting_for_restart = True
+                                        while waiting_for_restart:
+                                            for event in pygame.event.get():
+                                                if event.type == pygame.QUIT:
+                                                    pygame.quit()
+                                                    return None
+                                                if event.type == pygame.KEYDOWN:
+                                                    if event.key == pygame.K_SPACE:
+                                                        # Reset về level 1
+                                                        level_manager.set_current_level(1)
+                                                        load_level(window, state, maze)
+                                                        state.game_completed = False  # Bỏ khóa di chuyển
+                                                        waiting_for_restart = False
+                                                        
+                                                if event.type == pygame.MOUSEBUTTONDOWN:
+                                                    mouse_pos = pygame.mouse.get_pos()
+                                                    if back_btn.rect.collidepoint(mouse_pos):
+                                                        exit_to_menu = True
+                                                        waiting_for_restart = False
+                                            
+                                            # Tiếp tục cập nhật màn hình trong khi chờ
+                                            draw(window, state, maze)
+                                            pygame.display.update()
+                                            CLOCK.tick(FPS)
                                     next_level = True
                                 
                             if not next_level:

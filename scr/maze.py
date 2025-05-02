@@ -116,13 +116,15 @@ class Maze:
         """
         return self.maze[pos[0]][pos[1]]
     
-    def set_cell(self, pos: tuple[int, int], value: str, forced: bool = False) -> None:
-        """ Cập nhật giá trị ô trong mê cung
-        Args: 
-            pos (tuple[int, int]): vị trị
-            value (str): giá trị
-            forced (bool): biến này giúp bv cái ô đặc biệt ko bị thay đổi giá trị
-        """
+    # Thêm kiểm tra hợp lệ trong hàm set_cell
+    def set_cell(self, pos, value, forced=False):
+        # Kiểm tra pos có hợp lệ không trước khi truy cập
+        if not (0 <= pos[0] < self.height and 0 <= pos[1] < self.width):
+            print(f"Warning: Attempted to set cell at invalid position {pos}")
+            return False  # Trả về False để biết có lỗi
+        
+        # Tiếp tục với code hiện tại
+        cell = self.maze[pos[0]][pos[1]]
         if pos in (self.start, self.goal) and not forced: # ko cho ghi đè lên điểm A, B
             if value == "V": # cho phép đổi màu tạm thời nếu value là V (visited)
                 self.maze[pos[0]][pos[1]].color = BLUE
