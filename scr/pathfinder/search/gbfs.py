@@ -45,12 +45,12 @@ class GreedyBestFirstSearch:
 
                 while tmp.parent is not None:
                     cells.append(tmp.state)
-                    path_cost += tmp.cost
+                    path_cost += grid.get_cost(tmp.state)
                     tmp = tmp.parent
                 cells.append(grid.start)
                 cells.reverse()
 
-                return Solution(cells, list(explored), path_cost)
+                return Solution(cells, list(explored), path_cost=path_cost)
             
             # Mở rộng các nút kề
             for action, state in grid.get_neighbors(node.state).items():

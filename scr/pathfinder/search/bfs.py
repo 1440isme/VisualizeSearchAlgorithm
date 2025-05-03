@@ -30,18 +30,19 @@ class BreadthFirstSearch:
             if node.state == grid.end:
                 
                 # Truy vết đường đi
-                cells = [] #  Tạo danh sách để lưu trữ các vị trí của đường đi.
+                path = []  # Tạo danh sách để lưu trữ các vị trí của đường đi.
                 path_cost = 0
-                tmp = node
+                current = node
 
-                while tmp.parent != None:
-                    cells.append(tmp.state)
-                    path_cost += tmp.cost
-                    tmp = tmp.parent
-                cells.append(grid.start)
-                cells.reverse()
+                while current != grid.get_node(pos=grid.start):
+                    path.append(current.state)
+                    path_cost += grid.get_cost(current.state)
+                    current = current.parent
 
-                return Solution(cells, list(explored_states), path_cost)
+                path.append(grid.start)
+                path.reverse()
+
+                return Solution(path, list(explored_states), path_cost=path_cost)
             
             # Mở rộng các nút kề
             for action, state in grid.get_neighbors(node.state).items():
@@ -55,4 +56,3 @@ class BreadthFirstSearch:
                 new.action = action
                 frontier.add(node=new)  # Thêm nút con vào frontier
 
-            

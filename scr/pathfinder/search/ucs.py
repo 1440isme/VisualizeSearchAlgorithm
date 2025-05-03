@@ -39,17 +39,19 @@ class UCS:
             if node.state == grid.end:
                 # Truy vết đường đi
                 cells = []
-                path_cost = 0
                 temp = node
 
                 while temp.parent is not None:
                     cells.append(temp.state)
-                    path_cost += temp.cost
                     temp = temp.parent
                 cells.append(grid.start)
                 cells.reverse()
 
-                return Solution(cells, explored, path_cost)
+                # When reconstructing the path
+                path_cost = cost_so_far[node.state]
+
+                # Return Solution with path_cost
+                return Solution(cells, explored, path_cost=path_cost)
 
             # Mở rộng các nút kề
             for action, state in grid.get_neighbors(node.state).items():

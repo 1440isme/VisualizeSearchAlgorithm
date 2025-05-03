@@ -29,6 +29,8 @@ from .constants import (
     YELLOW,
     START,
     GOAL,
+    ACCENT_ERROR,
+    GREEN
     
 )
 
@@ -308,7 +310,7 @@ def load_level(window, state, maze):
 
     # Show loading message
     waiting_text = f"Loading Level {current_level['id']}..."
-    wait_label = FONT_BOLD_20.render(waiting_text, True, DARK)
+    wait_label = FONT_BOLD_20.render(waiting_text, True, ACCENT_ERROR)
     wait_rect = wait_label.get_rect(center=(WIDTH//2, HEIGHT//2-50))
     window.blit(wait_label, wait_rect)
     pygame.display.update()
@@ -729,8 +731,8 @@ def randomize_start_goal(maze):
         return False  # Không đủ ô trống
     
     # Chọn ngẫu nhiên vị trí start và goal
-    # Đảm bảo khoảng cách giữa chúng đủ xa (ít nhất 1/3 kích thước mê cung)
-    min_distance = (maze.width + maze.height) / 6
+    # Đảm bảo khoảng cách giữa chúng đủ xa (ít nhất 1/2 kích thước mê cung)
+    min_distance = ((maze.width ** 2 + maze.height ** 2) ** 0.5) / 2
     
     attempts = 100  # Giới hạn số lần thử để tránh vòng lặp vô hạn
     while attempts > 0:

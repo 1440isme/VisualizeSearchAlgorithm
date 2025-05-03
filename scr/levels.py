@@ -4,6 +4,12 @@ Provides level definitions with increasing difficulty
 """
 import random
 from typing import Callable, Dict, List, Tuple
+import sys
+import os
+
+# Add the parent directory to sys.path to import constants
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from scr.constants import MAZE_WIDTH, MAZE_HEIGHT, CELL_SIZE
 
 # Define level settings with progression
 LEVELS = [
@@ -54,9 +60,15 @@ LEVELS = [
     }
 ]
 
-# Maximum maze dimensions (will be used for level 5, others will scale down)
-MAX_MAZE_WIDTH = 50
-MAX_MAZE_HEIGHT = 27
+# Maximum maze dimensions (dynamically calculated based on constants)
+MAX_MAZE_WIDTH = MAZE_WIDTH // CELL_SIZE
+MAX_MAZE_HEIGHT = MAZE_HEIGHT // CELL_SIZE
+
+# Make sure dimensions are odd (for maze generation)
+if MAX_MAZE_WIDTH % 2 == 0:
+    MAX_MAZE_WIDTH -= 1
+if MAX_MAZE_HEIGHT % 2 == 0:
+    MAX_MAZE_HEIGHT -= 1
 
 class LevelManager:
     def __init__(self):
