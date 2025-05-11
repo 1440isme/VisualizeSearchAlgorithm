@@ -375,6 +375,11 @@ class Maze:
             "Iterative Deepening DFS": Search.ITERATIVE_DEEPENING_SEARCH,
             "Iterative Deepening A*": Search.IDA_STAR_SEARCH,
             "Beam Search": Search.BEAM_SEARCH,
+            "And-Or Search": Search.AND_OR_SEARCH,
+            "Simple Hill Climbing Search": Search.HILL_CLIMBING_SEARCH,
+            "Backtracking CSP Search": Search.BACKTRACKING_SEARCH,
+            
+            
         }
 
         # khởi tạo grid

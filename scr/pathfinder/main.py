@@ -10,6 +10,9 @@ from .search.ucs import UCS
 from .search.iddfs import IterativeDeepeningSearch
 from .search.idastar import IDAStarSearch
 from .search.beam import BeamSearch
+from .search.and_or import AndOrSearch
+from .search.simplehillclimbing import SimpleHillClimbingSearch
+from .search.backtrackingCSP import BacktrackingCSPSearch
 from .models.grid import Grid
 from .models.solution import Solution
 from .models.search_types import Search
@@ -26,6 +29,10 @@ SEARCH: dict[Search, SearchFunction] = {
     Search.ITERATIVE_DEEPENING_SEARCH: IterativeDeepeningSearch.search,
     Search.IDA_STAR_SEARCH: IDAStarSearch.search,
     Search.BEAM_SEARCH: BeamSearch.search,
+    Search.AND_OR_SEARCH: AndOrSearch.search,
+    Search.HILL_CLIMBING_SEARCH: SimpleHillClimbingSearch.search,
+    Search.BACKTRACKING_SEARCH: BacktrackingCSPSearch.search,
+    
 }
 
 
