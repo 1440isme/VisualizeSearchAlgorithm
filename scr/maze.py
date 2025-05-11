@@ -378,7 +378,7 @@ class Maze:
             "And-Or Search": Search.AND_OR_SEARCH,
             "Simple Hill Climbing Search": Search.HILL_CLIMBING_SEARCH,
             "Backtracking CSP Search": Search.BACKTRACKING_SEARCH,
-            
+            "Q-Learning Search": Search.QLEARNING_SEARCH,
             
         }
 

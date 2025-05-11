@@ -13,6 +13,7 @@ from .search.beam import BeamSearch
 from .search.and_or import AndOrSearch
 from .search.simplehillclimbing import SimpleHillClimbingSearch
 from .search.backtrackingCSP import BacktrackingCSPSearch
+from .search.qlearning import QLearning
 from .models.grid import Grid
 from .models.solution import Solution
 from .models.search_types import Search
@@ -32,7 +33,7 @@ SEARCH: dict[Search, SearchFunction] = {
     Search.AND_OR_SEARCH: AndOrSearch.search,
     Search.HILL_CLIMBING_SEARCH: SimpleHillClimbingSearch.search,
     Search.BACKTRACKING_SEARCH: BacktrackingCSPSearch.search,
-    
+    Search.QLEARNING_SEARCH: QLearning.search,
 }
 
 

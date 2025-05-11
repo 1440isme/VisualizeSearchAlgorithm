@@ -305,7 +305,8 @@ def initialize(window):
             ) for algo_name in [
                 "A* Search", "Dijkstra's Search", "Greedy Best First Search", 
                 "Breadth First Search", "Depth First Search", "Uniform Cost Search",
-                "Iterative Deepening DFS", "Iterative Deepening A*", "Beam Search", "And-Or Search", "Simple Hill Climbing Search", "Backtracking CSP Search",
+                "Iterative Deepening DFS", "Iterative Deepening A*", "Beam Search", "And-Or Search",
+                 "Simple Hill Climbing Search", "Backtracking CSP Search","Q-Learning Search"
             ]
         ]
     )
