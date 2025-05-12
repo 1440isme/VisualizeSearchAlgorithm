@@ -276,8 +276,6 @@ class Maze:
                     1, self.width - 2, 1, self.height - 2)
             case "Randomised DFS":
                 self.generator.randomised_dfs()
-            case "Prim's Algorithm":
-                self.generator.randomised_prims_algorithm()
             case "Basic Weight Maze":
                 self.generator.basic_weight_maze()
             case "Basic Random Maze":
@@ -367,16 +365,12 @@ class Maze:
         """
         mapper: dict[str, Search] = {
             "A* Search": Search.ASTAR_SEARCH,
-            "Dijkstra's Search": Search.DIJKSTRAS_SEARCH,
             "Greedy Best First Search": Search.GREEDY_BEST_FIRST_SEARCH,
             "Breadth First Search": Search.BREADTH_FIRST_SEARCH,
             "Depth First Search": Search.DEPTH_FIRST_SEARCH,
             "Uniform Cost Search": Search.UNIFORM_COST_SEARCH,
-            "Iterative Deepening DFS": Search.ITERATIVE_DEEPENING_SEARCH,
-            "Iterative Deepening A*": Search.IDA_STAR_SEARCH,
             "Beam Search": Search.BEAM_SEARCH,
             "And-Or Search": Search.AND_OR_SEARCH,
-            "Simple Hill Climbing Search": Search.HILL_CLIMBING_SEARCH,
             "Backtracking CSP Search": Search.BACKTRACKING_SEARCH,
             "Q-Learning Search": Search.QLEARNING_SEARCH,
             

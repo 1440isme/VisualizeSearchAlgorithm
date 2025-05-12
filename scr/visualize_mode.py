@@ -303,10 +303,10 @@ def initialize(window):
                 foreground_color=pygame.Color(*WHITE),
                 padding=8, font_size=18, outline=False
             ) for algo_name in [
-                "A* Search", "Dijkstra's Search", "Greedy Best First Search", 
+                "A* Search", "Greedy Best First Search", 
                 "Breadth First Search", "Depth First Search", "Uniform Cost Search",
-                "Iterative Deepening DFS", "Iterative Deepening A*", "Beam Search", "And-Or Search",
-                 "Simple Hill Climbing Search", "Backtracking CSP Search","Q-Learning Search"
+                "Beam Search", "And-Or Search",
+                "Backtracking CSP Search","Q-Learning Search"
             ]
         ]
     )
@@ -365,8 +365,7 @@ def initialize(window):
                 foreground_color=pygame.Color(*WHITE),
                 padding=8, font_size=18, outline=False
             ) for algo in [
-                "Recursive Division", "Prim's Algorithm", "Randomised DFS",
-                "Basic Random Maze", "Basic Weight Maze"
+                "Recursive Division", "Randomised DFS", "Basic Random Maze", "Basic Weight Maze"
             ]
         ]
     )

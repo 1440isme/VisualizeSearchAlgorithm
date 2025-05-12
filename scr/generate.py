@@ -77,87 +77,34 @@ class MazeGenerator:
         return [neighbor for neighbor in neighbors
                 if self._is_valid_cell(neighbor)]
 
-    def randomised_prims_algorithm(self) -> None:
-        """Generate maze by Randomised Prim's algorithm
+    
+
+    def basic_weight_maze(self) -> None:
+        """Generate a basic weight maze
         """
-        # Tạo bản sao đơn giản của mê cung thực tế
-        maze = [["#" for __ in range(self.maze.width)]
-                for _ in range(self.maze.height)]
+        nodes = []
+        for rowIdx in range(self.maze.width):
+            for colIdx in range(self.maze.height):
+                # Bỏ qua điểm xuất phát và kết thúc
+                if self._should_preserve_cell((colIdx, rowIdx)):
+                    continue
+                    
+                if random.randint(1, 10) < 8:
+                    continue
 
-        # Đánh dấu điểm xuất phát và kết thúc
-        maze[self.maze.start[0]][self.maze.start[1]] = "1"
-        maze[self.maze.goal[0]][self.maze.goal[1]] = "1"
-
-        # Đặt tường ở khắp mọi nơi ngoại trừ điểm xuất phát và kết thúc
-        for rowIdx in range(self.maze.height):
-            for colIdx in range(self.maze.width):
-                if not self._should_preserve_cell((rowIdx, colIdx)):
-                    self.maze.set_cell((rowIdx, colIdx), "#")
-
-        # Create a list for storing frontier cells
-        frontier = self._get_two_step_neighbors(maze, self.maze.start, "#")
-
-        # Visited frontier cells
-        visited = set()
-
-        # For animating nodes
-        nodes_to_animate = []
-
-        while frontier:
-            cell = random.choice(frontier)
-
-            # Skip if already visited
-            if cell in visited:
-                frontier.remove(cell)
-                continue
-
-            # Get neighbors of type "1"
-            neighbors = self._get_two_step_neighbors(maze, cell, "1")
-
-            # If neighbors is not empty, break the wall between the neighbor
-            # and the frontier cell. Also set neighbor to type "1"
-            if neighbors:
-                neighbor = random.choice(neighbors)
-
-                wall = ((cell[0] + neighbor[0]) // 2,
-                        (cell[1] + neighbor[1]) // 2)
-
-                maze[wall[0]][wall[1]] = "1"
-                maze[cell[0]][cell[1]] = "1"
-
-                # For animations
-                x, y = self.maze.coords[wall[0]][wall[1]]
-                nodes_to_animate.append(
+                x, y = self.maze.coords[colIdx][rowIdx]
+                nodes.append(
                     AnimatingNode(
                         rect=pygame.Rect(0, 0, MIN_SIZE, MIN_SIZE),
                         center=(x + CELL_SIZE // 2, y + CELL_SIZE // 2),
-                        value="1",
                         ticks=pygame.time.get_ticks(),
-                        color=BLUE_2
+                        value="9",
+                        color=WHITE,
+                        animation=Animation.WEIGHT_ANIMATION
                     )
                 )
 
-                x, y = self.maze.coords[cell[0]][cell[1]]
-                nodes_to_animate.append(
-                    AnimatingNode(
-                        rect=pygame.Rect(0, 0, MIN_SIZE, MIN_SIZE),
-                        center=(x + CELL_SIZE // 2, y + CELL_SIZE // 2),
-                        value="1",
-                        ticks=pygame.time.get_ticks(),
-                        color=GREEN_2
-                    )
-                )
-
-                frontier.extend(self._get_two_step_neighbors(maze, cell, "#"))
-
-            # Add current frontier cell to the visited cell
-            # and remove it from the frontier
-            visited.add(cell)
-            frontier.remove(cell)
-
-        # Add nodes for animation
-        self.maze.animator.add_nodes_to_animate(nodes_to_animate)
-
+        self.maze.animator.add_nodes_to_animate(nodes, gap=2)
     def randomised_dfs(self) -> None:
         """Generate maze by randomised dfs
         """
@@ -229,34 +176,7 @@ class MazeGenerator:
 
         # Add animating nodes for animation
         self.maze.animator.add_nodes_to_animate(nodes_to_animate)
-
-    def basic_weight_maze(self) -> None:
-        """Generate a basic weight maze
-        """
-        nodes = []
-        for rowIdx in range(self.maze.width):
-            for colIdx in range(self.maze.height):
-                # Bỏ qua điểm xuất phát và kết thúc
-                if self._should_preserve_cell((colIdx, rowIdx)):
-                    continue
-                    
-                if random.randint(1, 10) < 8:
-                    continue
-
-                x, y = self.maze.coords[colIdx][rowIdx]
-                nodes.append(
-                    AnimatingNode(
-                        rect=pygame.Rect(0, 0, MIN_SIZE, MIN_SIZE),
-                        center=(x + CELL_SIZE // 2, y + CELL_SIZE // 2),
-                        ticks=pygame.time.get_ticks(),
-                        value="9",
-                        color=WHITE,
-                        animation=Animation.WEIGHT_ANIMATION
-                    )
-                )
-
-        self.maze.animator.add_nodes_to_animate(nodes, gap=2)
-
+        
     def basic_random_maze(self) -> None:
         """Generate a basic random maze with wall density from level settings
         """
