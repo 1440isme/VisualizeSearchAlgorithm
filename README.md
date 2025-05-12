@@ -7,7 +7,7 @@
 Dự án "VisualizeSearchAlgorithm" hay còn gọi là “Maze Explorer” được xây dựng với mục tiêu cung cấp một công cụ trực quan hóa các thuật toán tìm kiếm đường đi trong mê cung. Đây là một ứng dụng kết hợp giữa học thuật và giải trí, nhằm hỗ trợ người dùng, đặc biệt là sinh viên và người học về trí tuệ nhân tạo (AI), hiểu rõ hơn về cách các thuật toán hoạt động trong thực tế. Dự án không chỉ dừng lại ở việc mô phỏng thuật toán mà còn hướng tới việc tạo ra một môi trường tương tác để người dùng trải nghiệm và khám phá.
 
 ### 1.1 Giáo dục và hỗ trợ học tập
-- Trực quan hóa quy trình hoạt động của các thuật toán tìm kiếm đường đi như A*, Dijkstra, BFS, DFS, và nhiều thuật toán khác. Người dùng có thể quan sát cách các thuật toán này mở rộng các nút, chọn đường đi, và tối ưu hóa giải pháp.
+- Trực quan hóa quy trình hoạt động của các thuật toán tìm kiếm đường đi như A*, BFS, DFS, và nhiều thuật toán khác. Người dùng có thể quan sát cách các thuật toán này mở rộng các nút, chọn đường đi, và tối ưu hóa giải pháp.
 - So sánh hiệu suất giữa các thuật toán, bao gồm thời gian thực thi và độ dài đường đi, từ đó cung cấp kiến thức thực tế về ưu và nhược điểm của từng thuật toán trong các tình huống khác nhau.
 
 ### 1.2 Tăng tính tương tác và trải nghiệm người dùng
