@@ -98,7 +98,7 @@ class MazeGenerator:
                         rect=pygame.Rect(0, 0, MIN_SIZE, MIN_SIZE),
                         center=(x + CELL_SIZE // 2, y + CELL_SIZE // 2),
                         ticks=pygame.time.get_ticks(),
-                        value="9",
+                        value="9", #Giá trị của weight
                         color=WHITE,
                         animation=Animation.WEIGHT_ANIMATION
                     )
