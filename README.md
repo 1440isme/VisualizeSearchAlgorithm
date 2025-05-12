@@ -1,10 +1,10 @@
-# Maze Explore (VisualizeSearchAlgorithm)
+# Maze Explorer (VisualizeSearchAlgorithm)
 
 ![Home_page](./gif/home_page.gif)
 
 ## 1. Mục tiêu
 
-Dự án "VisualizeSearchAlgorithm" hay còn gọi là “Maze Explore” được xây dựng với mục tiêu cung cấp một công cụ trực quan hóa các thuật toán tìm kiếm đường đi trong mê cung. Đây là một ứng dụng kết hợp giữa học thuật và giải trí, nhằm hỗ trợ người dùng, đặc biệt là sinh viên và người học về trí tuệ nhân tạo (AI), hiểu rõ hơn về cách các thuật toán hoạt động trong thực tế. Dự án không chỉ dừng lại ở việc mô phỏng thuật toán mà còn hướng tới việc tạo ra một môi trường tương tác để người dùng trải nghiệm và khám phá.
+Dự án "VisualizeSearchAlgorithm" hay còn gọi là “Maze Explorer” được xây dựng với mục tiêu cung cấp một công cụ trực quan hóa các thuật toán tìm kiếm đường đi trong mê cung. Đây là một ứng dụng kết hợp giữa học thuật và giải trí, nhằm hỗ trợ người dùng, đặc biệt là sinh viên và người học về trí tuệ nhân tạo (AI), hiểu rõ hơn về cách các thuật toán hoạt động trong thực tế. Dự án không chỉ dừng lại ở việc mô phỏng thuật toán mà còn hướng tới việc tạo ra một môi trường tương tác để người dùng trải nghiệm và khám phá.
 
 ### 1.1 Giáo dục và hỗ trợ học tập
 - Trực quan hóa quy trình hoạt động của các thuật toán tìm kiếm đường đi như A*, Dijkstra, BFS, DFS, và nhiều thuật toán khác. Người dùng có thể quan sát cách các thuật toán này mở rộng các nút, chọn đường đi, và tối ưu hóa giải pháp.
@@ -614,7 +614,7 @@ Dự án "VisualizeSearchAlgorithm" hay còn gọi là “Maze Explore” đư�
 
 ## 3. Kết luận
 
-Dự án Maze Explore (VisualizeSearchAlgorithm) đã đạt được nhiều kết quả, cả về mặt kỹ thuật lẫn giá trị ứng dụng thực tế. Các kết quả này không chỉ phản ánh sự thành công trong việc hiện thực hóa ý tưởng ban đầu mà còn khẳng định vai trò của ứng dụng như một công cụ học tập và giải trí hữu ích trong lĩnh vực trí tuệ nhân tạo (AI). Dưới đây là một số kết quả nổi bật:
+Dự án Maze Explorer (VisualizeSearchAlgorithm) đã đạt được nhiều kết quả, cả về mặt kỹ thuật lẫn giá trị ứng dụng thực tế. Các kết quả này không chỉ phản ánh sự thành công trong việc hiện thực hóa ý tưởng ban đầu mà còn khẳng định vai trò của ứng dụng như một công cụ học tập và giải trí hữu ích trong lĩnh vực trí tuệ nhân tạo (AI). Dưới đây là một số kết quả nổi bật:
 
 ### 3.1 Trực quan hóa thành công các thuật toán tìm kiếm đường đi
 - Dự án đã triển khai và trực quan hóa hiệu quả các thuật toán tìm kiếm như A*, BFS, DFS, và các thuật toán nâng cao khác như Greedy Best First Search, Beam Search, Q-Learning,... Người dùng có thể quan sát chi tiết cách mỗi thuật toán hoạt động, từ việc mở rộng các nút đến việc tìm ra đường đi tối ưu.

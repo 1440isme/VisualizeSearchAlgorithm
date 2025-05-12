@@ -34,7 +34,7 @@ pygame.init()
 
 # Set up window
 WINDOW = pygame.display.set_mode((WIDTH, HEIGHT), pygame.HWACCEL)
-pygame.display.set_caption("Maze Pathfinder - Modern Visualization")
+pygame.display.set_caption("MAZE EXPLORER")
 
 # Tạo nút menu chính với thiết kế hiện đại
 visualize_mode_btn = Button(
@@ -91,19 +91,19 @@ def show_main_menu():
     # Vẽ tiêu đề với hiệu ứng pulse
     pulse = math.sin(elapsed / 500) * 0.1 + 1  # Dao động từ 0.9 đến 1.1
     title_font = pygame.font.Font("assets/font/Montserrat-Bold.ttf", int(60 * pulse))
-    title_surface = title_font.render("MAZE PATHFINDER", True, WHITE)
+    title_surface = title_font.render("MAZE EXPLORER", True, WHITE)
     title_rect = title_surface.get_rect(center=(WIDTH//2, HEIGHT//4))
     
     # Tạo hiệu ứng glow cho tiêu đề
     for offset in range(5, 0, -1):
-        glow_surface = title_font.render("MAZE PATHFINDER", True, (100, 150, 255, 100//offset))
+        glow_surface = title_font.render("MAZE EXPLORER", True, (100, 150, 255, 100//offset))
         glow_rect = glow_surface.get_rect(center=(WIDTH//2 + offset//2, HEIGHT//4 + offset//2))
         WINDOW.blit(glow_surface, glow_rect)
     
     WINDOW.blit(title_surface, title_rect)
     
     # Vẽ subtitle với hiệu ứng fade in từ trái sang phải
-    subtitle_text = "Modern Visualization & Pathfinding Algorithms"
+    subtitle_text = "Maze Pathfinder Visualization - Maze Game"
     subtitle_font = pygame.font.Font("assets/font/Montserrat-Regular.ttf", 20)
     subtitle_full = subtitle_font.render(subtitle_text, True, WHITE)
     subtitle_width = subtitle_full.get_width()
