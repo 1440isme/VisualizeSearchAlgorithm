@@ -302,9 +302,9 @@ def initialize(window):
                 background_color=pygame.Color(*PRIMARY_DARK),
                 foreground_color=pygame.Color(*WHITE),
                 padding=8, font_size=18, outline=False
-            ) for algo_name in [
-                "A* Search", "Greedy Best First Search", 
+            ) for algo_name in [ 
                 "Breadth First Search", "Depth First Search", "Uniform Cost Search",
+                "A* Search", "Greedy Best First Search",
                 "Beam Search", "And-Or Search",
                 "Backtracking CSP Search","Q-Learning Search"
             ]
