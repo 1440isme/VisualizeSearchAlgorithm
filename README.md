@@ -2,6 +2,12 @@
 
 ![Home_page](./gif/home_page.gif)
 
+<div align="center">
+
+About more (English ver.): [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/1440isme/VisualizeSearchAlgorithm)
+
+</div>
+
 ## 1. Mục tiêu
 
 Dự án "VisualizeSearchAlgorithm" hay còn gọi là “Maze Explorer” được xây dựng với mục tiêu cung cấp một công cụ trực quan hóa các thuật toán tìm kiếm đường đi trong mê cung. Đây là một ứng dụng kết hợp giữa học thuật và giải trí, nhằm hỗ trợ người dùng, đặc biệt là sinh viên và người học về trí tuệ nhân tạo (AI), hiểu rõ hơn về cách các thuật toán hoạt động trong thực tế. Dự án không chỉ dừng lại ở việc mô phỏng thuật toán mà còn hướng tới việc tạo ra một môi trường tương tác để người dùng trải nghiệm và khám phá.
