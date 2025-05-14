@@ -171,11 +171,13 @@ class Maze:
         Args: 
             speed_str (str): speed string
         """
-
-        if not speed_str in ("Fast  ", "Medium", "Slow"):
+        # Kiểm tra và cập nhật tốc độ
+        if speed_str in ("Fast", "Medium", "Slow"):
+            self.speed = speed_str
             return
         
-        self.speed = speed_str
+        # Nếu không hợp lệ, giữ nguyên tốc độ hiện tại
+        print(f"Warning: Invalid speed value '{speed_str}'. Speed remains unchanged.")
 
     def clear_board(self) -> None:
         """Xóa các tường mê cung"""

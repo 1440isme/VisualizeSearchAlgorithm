@@ -437,6 +437,9 @@ def handle_ui_events(window, state, maze):
 def handle_button_click(btn_key, window, state, maze):
     """Xử lý sự kiện click cho từng loại nút"""
     if btn_key == 'back':
+        # Dừng animation và xóa các node đang animate
+        maze.animator.nodes_to_animate.clear()
+        maze.animator.animating = False
         # Trở về menu chính
         return "menu"
         
@@ -522,7 +525,10 @@ def handle_menus(window, state, maze):
                     background_color=pygame.Color(*ACCENT_PRIMARY),
                 )
                 state.speed_label.rect.centerx = button_objects['speed'].rect.centerx
+                
+                # Đảm bảo set_speed nhận đúng giá trị tốc độ
                 maze.set_speed(speed_text)
+                state.need_update = True
                 state.overlay = False
     
     # Xử lý menu so sánh (Run All)
@@ -691,7 +697,7 @@ def run_visualize_mode(window, state, maze, animator):
 
     state.speed_label = Label(
         surface=window,
-        text="Fast",
+        text="Fast",  # Đảm bảo giá trị mặc định khớp với các giá trị được chấp nhận
         font_size=16,
         x=button_objects['speed'].rect.x,
         y=25,
@@ -849,6 +855,9 @@ def run_visualize_mode(window, state, maze, animator):
         pygame.display.update()
         CLOCK.tick(FPS)
     
+    # Dừng animation và xóa các node đang animate trước khi thoát
+    maze.animator.nodes_to_animate.clear()
+    maze.animator.animating = False
     # Return to menu
     return "menu"
 
