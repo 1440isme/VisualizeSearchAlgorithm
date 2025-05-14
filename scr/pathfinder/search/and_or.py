@@ -69,7 +69,7 @@ class AndOrSearch:
                     child_node = grid.get_node(pos=state)
                     child_node.parent = node
                     child_node.action = action
-                    child_node.is_and = grid.is_and_node(state) if hasattr(grid, 'is_and_node') else False
+                    child_node.is_and = grid.is_and_node(state) 
                     frontier.add(child_node)
                     # Lưu vào cây AND-OR
                     and_or_tree[node.state] = and_or_tree.get(node.state, {})
@@ -88,6 +88,11 @@ class AndOrSearch:
         while current.state != grid.start:
             path.append(current.state)
             path_cost += grid.get_cost(current.state)
+            if current.parent and grid.is_and_node(current.parent.state):
+            # Kiểm tra tất cả nhánh trong and_or_tree[current.parent.state]
+                for action, child_states in and_or_tree[current.parent.state].items():
+                    # Logic để xử lý các nhánh (ví dụ: thêm vào path nếu cần)
+                    pass
             current = current.parent
 
         path.append(grid.start)
