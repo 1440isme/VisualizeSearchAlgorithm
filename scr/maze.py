@@ -172,7 +172,7 @@ class Maze:
             speed_str (str): speed string
         """
 
-        if not speed_str in ("Nhanh", "Vừa", "Chậm"):
+        if not speed_str in ("Fast  ", "Medium", "Slow"):
             return
         
         self.speed = speed_str
@@ -417,11 +417,11 @@ class Maze:
 
         # gap: Khoảng thời gian (ms) giữa 2 node được animate -> điều chỉnh nhanh chậm
         match self.speed:
-            case "Nhanh":
+            case "Fast":
                 gap = 5
-            case "Vừa":
-                gap = 30
-            case "Chậm":
+            case "Medium":
+                gap = 100
+            case "Slow":
                 gap = 1000
             case _:
                 gap = 5
