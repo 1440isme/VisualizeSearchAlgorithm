@@ -41,7 +41,7 @@ class AndOrSearch:
                 return Solution(path, list(explored_states), path_cost=path_cost)
 
             # Xác định loại nút (AND hay OR)
-            is_and_node = grid.is_and_node(node.state) if hasattr(grid, 'is_and_node') else False
+            is_and_node = grid.is_and_node(node.state) 
 
             # Lấy các hàng xóm
             neighbors = grid.get_neighbors(node.state).items()

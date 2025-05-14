@@ -66,12 +66,19 @@ class Grid:
             possible_actions[action] = (r, c)
         return possible_actions
     
+    def is_and_node(self, pos: tuple[int, int]) -> bool:
+        """
+        Trả về True nếu node tại pos được đánh dấu là AND-node (thuộc tính `is_and` trên Node).
+        """
+        node = self.get_node(pos)
+        return getattr(node, "is_and", False)
+
     def __repr__(self) -> str:
         return f"Grid([[...], ...], {self.start}, {self.end})"
 
-    
 
-        
+
+
 
 
 
