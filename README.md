@@ -638,4 +638,4 @@ Dự án Maze Explorer (VisualizeSearchAlgorithm) đã đạt được nhiều k
 - Thông qua việc trực quan hóa, dự án đã giúp người dùng, đặc biệt là sinh viên và người học về AI, hiểu rõ hơn về cách thức hoạt động của các thuật toán tìm kiếm và tạo mê cung. Đây là một công cụ học tập hữu ích, góp phần nâng cao nhận thức về ứng dụng của trí tuệ nhân tạo trong các bài toán thực tế.
 - Mô hình này có thể mở rộng để áp dụng vào các lĩnh vực khác như lập kế hoạch robot, tối ưu hóa đường đi, và các hệ thống định tuyến.
 
-- Reference: [reference](./https://github.com/Tauseef-Hilal/Pathfinding-Visualizer)
+- Reference: [Tauseef-Hilal](https://github.com/Tauseef-Hilal/Pathfinding-Visualizer)
